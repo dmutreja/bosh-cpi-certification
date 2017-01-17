@@ -81,6 +81,10 @@ jobs:
         - {get: centos-stemcell, trigger: false} # pass-thru to certification jobs
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
+        - get: heavy-stemcell
+          resource: heavy-ubuntu-stemcell
+          params:
+            preserve_filename: true
         - get: stemcell
           resource: ubuntu-stemcell
           trigger: true
@@ -366,6 +370,12 @@ resources:
     type: bosh-io-stemcell
     source:
       name: &ubuntu-stemcell bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+
+  - name: heavy-ubuntu-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-aws-xen-ubuntu-trusty-go_agent
+      force_regular: true
 
   - name: centos-stemcell
     type: bosh-io-stemcell

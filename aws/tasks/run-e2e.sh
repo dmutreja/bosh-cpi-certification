@@ -18,6 +18,7 @@ export AWS_DEFAULT_REGION=${AWS_REGION_NAME}
 
 # inputs
 stemcell_path="$(realpath stemcell/*.tgz)"
+heavy_stemcell_path="$(realpath heavy-stemcell/*.tgz)"
 e2e_release="$(realpath pipelines/aws/assets/e2e-test-release)"
 bosh_cli=$(realpath bosh-cli/bosh-cli-*)
 chmod +x $bosh_cli
@@ -99,6 +100,9 @@ stemcells:
   - alias: stemcell
     name: ${STEMCELL_NAME}
     version: latest
+  - alias: heavy-stemcell
+    name: ${STEMCELL_NAME}-heavy
+    version: latest
 
 instance_groups:
   - name: iam-instance-profile-test
@@ -153,6 +157,15 @@ instance_groups:
     networks:
       - name: private
         default: [dns, gateway]
+  - name: heavy-stemcell-test
+    jobs: []
+    stemcell: heavy-stemcell
+    lifecycle: errand
+    instances: 1
+    vm_type: default
+    networks:
+      - name: private
+        default: [dns, gateway]
 EOF
 
 time $bosh_cli -n update-cloud-config "${e2e_cloud_config_filename}"
@@ -164,6 +177,9 @@ time $bosh_cli -n run-errand -d ${e2e_deployment_name} iam-instance-profile-test
 time $bosh_cli -n run-errand -d ${e2e_deployment_name} raw-ephemeral-disk-test
 
 time $bosh_cli -n run-errand -d ${e2e_deployment_name} elb-registration-test
+
+time $bosh_cli -n upload-stemcell "${heavy_stemcell_path}" --name="${STEMCELL_NAME}-heavy"
+time $bosh_cli -n run-errand -d ${e2e_deployment_name} heavy-stemcell-test
 
 # spot instances do not work in China
 if [ "${AWS_REGION_NAME}" != "cn-north-1" ]; then
