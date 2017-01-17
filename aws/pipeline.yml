@@ -54,13 +54,14 @@ shared:
     task: run-e2e
     file: pipelines/aws/tasks/run-e2e.yml
     params: &run-e2e-params
-      AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-      AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-      AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-      BOSH_CLIENT:        {{BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-      AWS_STACK_NAME:     {{AWS_E2E_STACK_NAME}}
-      STEMCELL_NAME:      ""
+      AWS_ACCESS_KEY:      {{AWS_ACCESS_KEY}}
+      AWS_SECRET_KEY:      {{AWS_SECRET_KEY}}
+      AWS_REGION_NAME:     {{AWS_REGION_NAME}}
+      BOSH_CLIENT:         {{BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET:  {{BOSH_CLIENT_SECRET}}
+      AWS_STACK_NAME:      {{AWS_E2E_STACK_NAME}}
+      STEMCELL_NAME:       ""
+      HEAVY_STEMCELL_NAME: ""
 
   - &teardown
     task: teardown
@@ -103,8 +104,9 @@ jobs:
           - <<: *run-e2e
             params:
               <<: *run-e2e-params
-              STEMCELL_NAME:    *ubuntu-stemcell
-              AWS_STACK_NAME:   {{AWS_E2E_STACK_NAME}}
+              STEMCELL_NAME:       *ubuntu-stemcell
+              HEAVY_STEMCELL_NAME: *heavy-ubuntu-stemcell
+              AWS_STACK_NAME:      {{AWS_E2E_STACK_NAME}}
 
         ensure:
           <<: *teardown
@@ -374,7 +376,7 @@ resources:
   - name: heavy-ubuntu-stemcell
     type: bosh-io-stemcell
     source:
-      name: bosh-aws-xen-ubuntu-trusty-go_agent
+      name: &heavy-ubuntu-stemcell bosh-aws-xen-ubuntu-trusty-go_agent
       force_regular: true
 
   - name: centos-stemcell

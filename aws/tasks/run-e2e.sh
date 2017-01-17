@@ -11,6 +11,7 @@ source pipelines/aws/utils.sh
 : ${BOSH_CLIENT_SECRET:?}
 : ${AWS_STACK_NAME:?}
 : ${STEMCELL_NAME:?}
+: ${HEAVY_STEMCELL_NAME:?}
 
 export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
 export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
@@ -43,6 +44,7 @@ pushd ${e2e_release_home}
 popd
 
 time $bosh_cli -n upload-stemcell "${stemcell_path}"
+time $bosh_cli -n upload-stemcell "${heavy_stemcell_path}"
 
 e2e_manifest_filename=e2e-manifest.yml
 e2e_cloud_config_filename=e2e-cloud-config.yml
@@ -101,7 +103,7 @@ stemcells:
     name: ${STEMCELL_NAME}
     version: latest
   - alias: heavy-stemcell
-    name: ${STEMCELL_NAME}-heavy
+    name: ${HEAVY_STEMCELL_NAME}
     version: latest
 
 instance_groups:
@@ -158,7 +160,10 @@ instance_groups:
       - name: private
         default: [dns, gateway]
   - name: heavy-stemcell-test
-    jobs: []
+    jobs:
+      - name: heavy-stemcell-test
+        release: ${e2e_deployment_name}
+        properties: {}
     stemcell: heavy-stemcell
     lifecycle: errand
     instances: 1
@@ -178,7 +183,6 @@ time $bosh_cli -n run-errand -d ${e2e_deployment_name} raw-ephemeral-disk-test
 
 time $bosh_cli -n run-errand -d ${e2e_deployment_name} elb-registration-test
 
-time $bosh_cli -n upload-stemcell "${heavy_stemcell_path}" --name="${STEMCELL_NAME}-heavy"
 time $bosh_cli -n run-errand -d ${e2e_deployment_name} heavy-stemcell-test
 
 # spot instances do not work in China

@@ -15,11 +15,12 @@ run:
   path: pipelines/aws/tasks/run-e2e.sh
 
 params:
-  BOSH_DEBUG_LEVEL: info
-  AWS_ACCESS_KEY:     ""
-  AWS_SECRET_KEY:     ""
-  AWS_REGION_NAME:    ""
-  BOSH_CLIENT:        ""
-  BOSH_CLIENT_SECRET: ""
-  AWS_STACK_NAME:     ""
-  STEMCELL_NAME:      ""
+  BOSH_DEBUG_LEVEL:    info
+  AWS_ACCESS_KEY:      ""
+  AWS_SECRET_KEY:      ""
+  AWS_REGION_NAME:     ""
+  BOSH_CLIENT:         ""
+  BOSH_CLIENT_SECRET:  ""
+  AWS_STACK_NAME:      ""
+  STEMCELL_NAME:       ""
+  HEAVY_STEMCELL_NAME: ""
