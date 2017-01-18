@@ -201,7 +201,7 @@ jobs:
           params:
             preserve_filename: true
         - get: old-stemcell
-          resource: ubuntu-stemcell
+          resource: old-ubuntu-stemcell
           trigger: false
           version:
             version: "3232.15"
@@ -378,6 +378,11 @@ resources:
     source:
       name: &heavy-ubuntu-stemcell bosh-aws-xen-ubuntu-trusty-go_agent
       force_regular: true
+
+  - name: old-ubuntu-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: *ubuntu-stemcell
 
   - name: centos-stemcell
     type: bosh-io-stemcell
