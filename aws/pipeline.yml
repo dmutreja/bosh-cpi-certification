@@ -22,8 +22,7 @@ shared:
       AWS_REGION_NAME:    {{AWS_REGION_NAME}}
       PUBLIC_KEY_NAME:    {{PUBLIC_KEY_NAME}}
       PRIVATE_KEY_DATA:   {{PRIVATE_KEY_DATA}}
-      SSLIP_IO_KEY:       {{sslip_io_key}}
-      SSLIP_IO_CERT:      {{sslip_io_cert}}
+      SSLIP_IO_CREDS:     {{sslip_io_creds}}
       AWS_STACK_NAME:     ""
 
   - &deploy-director

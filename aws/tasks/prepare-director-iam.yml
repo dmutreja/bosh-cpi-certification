@@ -26,5 +26,4 @@ params:
   AWS_STACK_NAME:         ""
   PUBLIC_KEY_NAME:        ""
   PRIVATE_KEY_DATA:       ""
-  SSLIP_IO_KEY:           ""
-  SSLIP_IO_CERT:          ""
+  SSLIP_IO_CREDS:         ""

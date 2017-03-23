@@ -11,8 +11,7 @@ set -e
 : ${AWS_STACK_NAME:?}
 : ${PUBLIC_KEY_NAME:?}
 : ${PRIVATE_KEY_DATA:?}
-: ${SSLIP_IO_KEY:?}
-: ${SSLIP_IO_CERT:?}
+: ${SSLIP_IO_CREDS:?}
 : ${USE_REDIS:=false}
 
 # inputs
@@ -239,8 +238,7 @@ $bosh_cli interpolate \
   -v bosh_client_secret="${BOSH_CLIENT_SECRET}" \
   -v blobstore_bucket_name="${BLOBSTORE_BUCKET_NAME}" \
   -v aws_region_name="${AWS_REGION_NAME}" \
-  -v sslip_io_key="${SSLIP_IO_KEY}" \
-  -v sslip_io_cert="${SSLIP_IO_CERT}" \
+  -l <(echo "$SSLIP_IO_CREDS") \
   -v public_key_name="${PUBLIC_KEY_NAME}" \
   -v security_group="${SECURITY_GROUP}" \
   -v aws_access_key="${AWS_ACCESS_KEY}" \
