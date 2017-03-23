@@ -35,7 +35,7 @@ jobs:
           BATS_DIRECTOR_IP:   {{BATS_DIRECTOR_IP_ubuntu}}
           BOSH_CLIENT:        {{BOSH_CLIENT}}
           BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-          SSLIP_IO_KEY:       {{sslip_io_key}}
+          SSLIP_IO_CREDS:     {{sslip_io_creds}}
 
       - do:
         - task: deploy-director

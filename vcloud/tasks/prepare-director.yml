@@ -30,4 +30,4 @@ params:
   BATS_DIRECTOR_IP:   ""
   BOSH_CLIENT:        ""
   BOSH_CLIENT_SECRET: ""
-  SSLIP_IO_KEY:       ""
+  SSLIP_IO_CREDS:     ""

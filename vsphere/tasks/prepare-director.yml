@@ -32,4 +32,4 @@ params:
   BOSH_VSPHERE_VCENTER_DISK_PATH:       ""
   BOSH_VSPHERE_VCENTER_VLAN:            ""
   USE_REDIS:                            ""
-  SSLIP_IO_KEY:                         ""
+  SSLIP_IO_CREDS:                       ""

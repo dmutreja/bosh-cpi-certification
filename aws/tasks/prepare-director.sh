@@ -187,7 +187,7 @@ jobs:
         address: 127.0.0.1
         db: *db
 
-      agent: {mbus: "nats://nats:nats-password@$((director_static_ip)):4222"}
+      agent: {mbus: "nats://nats:nats-password@((director_static_ip)):4222"}
 
       ntp: &ntp
         - 0.north-america.pool.ntp.org
@@ -209,7 +209,7 @@ cloud_provider:
     user: vcap
     private_key: ((shared_key))
 
-  mbus: "https://mbus:mbus-password@$((director_eip)):6868"
+  mbus: "https://mbus:mbus-password@((director_eip)):6868"
 
   properties:
     aws: *aws-config

@@ -176,7 +176,7 @@ jobs:
         address: 127.0.0.1
         db: *db
 
-      agent: {mbus: "nats://nats:nats-password@$((director_static_ip)):4222"}
+      agent: {mbus: "nats://nats:nats-password@((director_static_ip)):4222"}
 
       ntp: &ntp
         - 0.north-america.pool.ntp.org
