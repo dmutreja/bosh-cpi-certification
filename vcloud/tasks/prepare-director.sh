@@ -45,7 +45,6 @@ name: certification-director
 releases:
   - name: bosh
     url: ((bosh_release_uri))
-    sha1: ((bosh_release_sha1))
   - name: bosh-vcloud-cpi
     url: ((cpi_release_uri))
 
@@ -168,7 +167,6 @@ EOF
 
 $bosh_cli interpolate \
   -v bosh_release_uri="${BOSH_RELEASE_URI}" \
-  -v bosh_release_sha1="${BOSH_RELEASE_SHA1}" \
   -v cpi_release_uri="${CPI_RELEASE_URI}" \
   -v stemcell_uri="${STEMCELL_URI}" \
   -v vcloud_vapp="${VCLOUD_VAPP}" \
