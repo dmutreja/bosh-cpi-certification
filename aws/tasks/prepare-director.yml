@@ -9,6 +9,7 @@ inputs:
   - name: bosh-release
   - name: cpi-release
   - name: stemcell
+  - name: bosh-cli
 
 outputs:
   - name: director-config
@@ -27,3 +28,4 @@ params:
   PRIVATE_KEY_DATA:       ""
   USE_REDIS:              ""
   SSLIP_IO_KEY:           ""
+  SSLIP_IO_CERT:          ""
