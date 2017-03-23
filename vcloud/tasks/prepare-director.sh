@@ -172,7 +172,7 @@ $bosh_cli interpolate \
   -v vcloud_vapp="${VCLOUD_VAPP}" \
   -v network_cidr="${NETWORK_CIDR}" \
   -v network_gateway="${NETWORK_GATEWAY}" \
-  -v network_vlan="${NETWORK_VLAN}" \
+  -v vcloud_vlan="${VCLOUD_VLAN}" \
   -v bats_director_ip="${BATS_DIRECTOR_IP}" \
   -v bosh_client="${BOSH_CLIENT}" \
   -v bosh_client_secret="${BOSH_CLIENT_SECRET}" \
