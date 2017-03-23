@@ -229,7 +229,6 @@ $bosh_cli interpolate \
   -v bosh_release_uri="${BOSH_RELEASE_URI}" \
   -v cpi_release_uri="${CPI_RELEASE_URI}" \
   -v stemcell_uri="${STEMCELL_URI}" \
-  -v iam_instance_profile="${IAM_INSTANCE_PROFILE}" \
   -v availability_zone="${AVAILABILITY_ZONE}" \
   -v aws_network_cidr="${AWS_NETWORK_CIDR}" \
   -v subnet_id="${SUBNET_ID}" \
