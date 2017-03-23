@@ -199,7 +199,7 @@ cloud_provider:
     user: vcap
     private_key: ((shared_key))
 
-  mbus: "https://mbus:mbus-password@$((director_eip)):6868"
+  mbus: "https://mbus:mbus-password@((director_eip)):6868"
 
   properties:
     aws:

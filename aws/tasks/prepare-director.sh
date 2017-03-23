@@ -49,9 +49,9 @@ export AWS_DEFAULT_REGION=${AWS_REGION_NAME}
 shared_key="shared.pem"
 echo "${PRIVATE_KEY_DATA}" > "${output_dir}/${shared_key}"
 
-redis_job=""
+variable_redis_job=""
 if [ "${USE_REDIS}" == true ]; then
-  redis_job="- {name: redis, release: bosh}"
+  variable_redis_job="-v redis_job='- {name: redis, release: bosh}'"
 fi
 
 # env file generation
@@ -247,6 +247,5 @@ $bosh_cli interpolate \
   -v aws_secret_key="${AWS_SECRET_KEY}" \
   -v aws_access_key="${AWS_ACCESS_KEY}" \
   -v shared_key="${shared_key}" \
-  -v redis_job="${redis_job}" \
-  -v
+  ${variable_redis_job} \
   /tmp/director-template.yml > "${output_dir}/director.yml"
