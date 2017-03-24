@@ -29,6 +29,9 @@ STEMCELL_URI="file://$(echo stemcell/*.tgz)"
 # outputs
 output_dir="$(realpath director-config)"
 
+bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
+chmod +x $bosh_cli
+
 # environment
 env_name=$(cat environment/name)
 metadata=$(cat environment/metadata)
