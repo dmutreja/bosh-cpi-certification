@@ -161,7 +161,7 @@ jobs:
         s3_region: ((aws_region_name))
         bucket_name: ((blobstore_bucket_name))
         s3_signature_version: '4'
-        access_key_id: $((aws_access_key))
+        access_key_id: ((aws_access_key))
         secret_access_key: ((aws_secret_key))
 
       director:
