@@ -59,7 +59,7 @@ networks:
 vm_types:
   - name: default
     cloud_properties: &default_cloud_properties
-      instance_type: m3.medium
+      instance_type: t2.medium
       availability_zone: ${AVAILABILITY_ZONE}
   - name: raw_ephemeral_pool
     cloud_properties:
@@ -79,7 +79,7 @@ compilation:
   workers: 1
   network: private
   cloud_properties:
-    instance_type: m3.medium
+    instance_type: t2.medium
     availability_zone: ${AVAILABILITY_ZONE}
 EOF
 

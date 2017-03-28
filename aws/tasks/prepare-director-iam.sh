@@ -76,7 +76,7 @@ resource_pools:
       url: ((stemcell_uri))
     cloud_properties:
       iam_instance_profile: ((iam_instance_profile))
-      instance_type: m3.medium
+      instance_type: t2.medium
       availability_zone: ((availability_zone))
       ephemeral_disk:
         size: 25000

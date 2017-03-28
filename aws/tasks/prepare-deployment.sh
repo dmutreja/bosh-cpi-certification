@@ -46,7 +46,7 @@ compilation:
   workers: 1
   network: private
   cloud_properties:
-    instance_type: m3.medium
+    instance_type: t2.medium
     availability_zone: ${AVAILABILITY_ZONE}
 
 update:
@@ -62,7 +62,7 @@ resource_pools:
       version: latest
     network: private
     cloud_properties:
-      instance_type: m3.medium
+      instance_type: t2.medium
       availability_zone: ${AVAILABILITY_ZONE}
 
 networks:
