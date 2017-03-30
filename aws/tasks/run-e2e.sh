@@ -72,7 +72,8 @@ vm_types:
       elbs: [${ELB_NAME}]
   - name: spot_instance_pool
     cloud_properties:
-      <<: *default_cloud_properties
+      instance_type: m3.medium
+      availability_zone: ${AVAILABILITY_ZONE}
       spot_bid_price: 0.10 # 10x the normal bid price
 
 compilation:
