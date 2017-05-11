@@ -23,9 +23,12 @@ source ${new_director_config}/director.env
 : ${BOSH_ENVIRONMENT:?}
 : ${BOSH_CLIENT:?}
 : ${BOSH_CLIENT_SECRET:?}
+export BOSH_CA_CERT="${old_director_state}/ca_cert.pem"
 
 cp -r ${new_director_config}/* ${output_dir}
 cp -r ${old_director_state}/*-state.json ${output_dir}
+cp ${old_director_state}/creds.yml ${output_dir}
+cp ${old_director_state}/ca_cert.pem ${output_dir}
 
 # deployment manifest references releases and stemcells relative to itself...make it true
 # these resources are also used in the teardown step
@@ -46,7 +49,9 @@ trap finish EXIT
 
 echo "upgrading existing BOSH Director VM..."
 pushd ${output_dir} > /dev/null
-  time ${bosh_cli} create-env director.yml
+  time ${bosh_cli} create-env --state "${output_dir}/director-state.json" \
+    --vars-store "${output_dir}/creds.yml" -v director_name=bosh \
+    director.yml
 popd > /dev/null
 
 echo "recreating existing BOSH Deployment..."

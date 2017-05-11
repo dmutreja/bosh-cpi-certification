@@ -11,6 +11,7 @@ inputs:
   - name: cpi-release
   - name: stemcell
   - name: bosh-cli
+  - name: bosh-deployment
 
 outputs:
   - name: director-config
@@ -33,4 +34,3 @@ params:
   BOSH_VSPHERE_VCENTER_DISK_PATH:       ""
   BOSH_VSPHERE_VCENTER_VLAN:            ""
   USE_REDIS:                            ""
-  SSLIP_IO_CREDS:                       ""

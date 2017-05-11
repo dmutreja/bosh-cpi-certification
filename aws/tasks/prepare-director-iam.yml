@@ -10,6 +10,7 @@ inputs:
   - name: cpi-release
   - name: stemcell
   - name: bosh-cli
+  - name: bosh-deployment
 
 outputs:
   - name: director-config
@@ -26,4 +27,3 @@ params:
   AWS_STACK_NAME:         ""
   PUBLIC_KEY_NAME:        ""
   PRIVATE_KEY_DATA:       ""
-  SSLIP_IO_CREDS:         ""

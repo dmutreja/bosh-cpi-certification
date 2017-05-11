@@ -31,7 +31,7 @@ chmod +x $bosh_cli
 # outputs
 manifest_dir="$(realpath deployment-manifest)"
 
-export BOSH_ENVIRONMENT="${DIRECTOR_IP//./-}.sslip.io"
+export BOSH_ENVIRONMENT="${DIRECTOR_IP}"
 
 cat > "${manifest_dir}/deployment.yml" <<EOF
 ---

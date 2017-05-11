@@ -10,6 +10,7 @@ inputs:
   - name: environment
   - name: deployment-manifest
   - name: bosh-cli
+  - name: director-state
 
 run:
   path: pipelines/vsphere/tasks/create-deployment.sh

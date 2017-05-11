@@ -20,6 +20,7 @@ export AWS_DEFAULT_REGION=${AWS_REGION_NAME}
 
 # inputs
 manifest_dir=$(realpath deployment-manifest)
+director_state=$(realpath director-state)
 deployment_release=$(realpath pipelines/shared/assets/certification-release)
 stemcell_dir=$(realpath stemcell)
 bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
@@ -27,8 +28,9 @@ chmod +x $bosh_cli
 
 # configuration
 : ${DIRECTOR_IP:=$( stack_info "DirectorEIP" )}
+export BOSH_CA_CERT="${director_state}/ca_cert.pem"
 
-export BOSH_ENVIRONMENT="${DIRECTOR_IP//./-}.sslip.io"
+export BOSH_ENVIRONMENT="${DIRECTOR_IP}"
 
 pushd ${deployment_release}
   time $bosh_cli -n create-release --force --name ${RELEASE_NAME}

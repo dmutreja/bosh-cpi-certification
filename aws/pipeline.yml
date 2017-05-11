@@ -22,7 +22,6 @@ shared:
       AWS_REGION_NAME:    {{AWS_REGION_NAME}}
       PUBLIC_KEY_NAME:    {{PUBLIC_KEY_NAME}}
       PRIVATE_KEY_DATA:   {{PRIVATE_KEY_DATA}}
-      SSLIP_IO_CREDS:     {{sslip_io_creds}}
       AWS_STACK_NAME:     ""
 
   - &deploy-director
@@ -82,6 +81,7 @@ jobs:
         - {get: centos-stemcell, trigger: false} # pass-thru to certification jobs
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
+        - {get: bosh-deployment, trigger: false}
         - get: heavy-stemcell
           resource: heavy-ubuntu-stemcell
           params:
@@ -91,23 +91,19 @@ jobs:
           trigger: true
           params:
             preserve_filename: true
-
       - <<: *prepare-director
         file: pipelines/aws/tasks/prepare-director-iam.yml
         params:
           <<: *prepare-director-params
           AWS_STACK_NAME:   {{AWS_E2E_STACK_NAME}}
-
       - do:
           - <<: *deploy-director
-
           - <<: *run-e2e
             params:
               <<: *run-e2e-params
               STEMCELL_NAME:       *ubuntu-stemcell
               HEAVY_STEMCELL_NAME: *heavy-ubuntu-stemcell
               AWS_STACK_NAME:      {{AWS_E2E_STACK_NAME}}
-
         ensure:
           <<: *teardown
           params:
@@ -118,34 +114,30 @@ jobs:
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release,   trigger: true}
-        - {get: cpi-release,    trigger: true}
-        - {get: after-midnight, trigger: true}
-        - {get: pipelines,      trigger: false}
-        - {get: bosh-cli,       trigger: false}
-        - {get: bats,           trigger: false}
+        - {get: bosh-release,    trigger: true}
+        - {get: cpi-release,     trigger: true}
+        - {get: after-midnight,  trigger: true}
+        - {get: pipelines,       trigger: false}
+        - {get: bosh-cli,        trigger: false}
+        - {get: bats,            trigger: false}
+        - {get: bosh-deployment, trigger: false}
         - get: stemcell
           resource: centos-stemcell
           trigger: true
           params:
             preserve_filename: true
-
       - <<: *prepare-director
         params:
           <<: *prepare-director-params
           AWS_STACK_NAME: centos-manual-bats
-
       - do:
           - <<: *deploy-director
-
           - <<: *prepare-manual-bats
             params:
               <<: *prepare-manual-bats-params
               STEMCELL_NAME:  *centos-stemcell
               AWS_STACK_NAME: centos-manual-bats
-
           - <<: *run-bats
-
         ensure:
           <<: *teardown
 
@@ -153,32 +145,29 @@ jobs:
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release,   trigger: true}
-        - {get: cpi-release,    trigger: true}
-        - {get: after-midnight, trigger: true}
-        - {get: pipelines,      trigger: false}
-        - {get: bosh-cli,       trigger: false}
-        - {get: bats,           trigger: false}
+        - {get: bosh-release,    trigger: true}
+        - {get: cpi-release,     trigger: true}
+        - {get: after-midnight,  trigger: true}
+        - {get: pipelines,       trigger: false}
+        - {get: bosh-cli,        trigger: false}
+        - {get: bats,            trigger: false}
+        - {get: bosh-deployment, trigger: false}
         - get: stemcell
           resource: ubuntu-stemcell
           trigger: true
           params:
             preserve_filename: true
-
       - <<: *prepare-director
         params:
           <<: *prepare-director-params
           AWS_STACK_NAME: ubuntu-manual-bats
-
       - do:
           - <<: *deploy-director
-
           - <<: *prepare-manual-bats
             params:
               <<: *prepare-manual-bats-params
               STEMCELL_NAME:  *ubuntu-stemcell
               AWS_STACK_NAME: ubuntu-manual-bats
-
           - <<: *run-bats
         ensure:
           <<: *teardown
@@ -195,6 +184,7 @@ jobs:
         - {get: centos-stemcell,  trigger: false} # pass-through
         - {get: old-bosh-release, trigger: false, version: {version: "255.4"}, resource: bosh-release}
         - {get: old-cpi-release,  trigger: false, version: {version: "36"},  resource: cpi-release}
+        - {get: bosh-deployment,  trigger: false}
         - get: stemcell
           resource: ubuntu-stemcell
           trigger: true
@@ -207,7 +197,6 @@ jobs:
             version: "3232.15"
           params:
             preserve_filename: true
-
       - <<: *prepare-director
         input_mapping:
           stemcell:     old-stemcell
@@ -217,14 +206,12 @@ jobs:
           <<: *prepare-director-params
           AWS_STACK_NAME:    certify-upgrade
           USE_REDIS:         true
-
       - do:
         - <<: *deploy-director
           input_mapping:
             stemcell:     old-stemcell
             bosh-release: old-bosh-release
             cpi-release:  old-cpi-release
-
         - task: prepare-deployment
           file: pipelines/aws/tasks/prepare-deployment.yml
           params:
@@ -237,7 +224,6 @@ jobs:
             RELEASE_NAME:       certification
             DEPLOYMENT_NAME:    certification
             STEMCELL_NAME:      bosh-aws-xen-hvm-ubuntu-trusty-go_agent
-
         - task: create-deployment
           file: pipelines/aws/tasks/create-deployment.yml
           input_mapping:
@@ -251,13 +237,11 @@ jobs:
             AWS_STACK_NAME:     certify-upgrade
             RELEASE_NAME:       certification
             DEPLOYMENT_NAME:    certification
-
         - <<: *prepare-director
           params:
             <<: *prepare-director-params
             AWS_STACK_NAME:    certify-upgrade
             USE_REDIS:         false
-
         - task: test-upgrade
           file: pipelines/shared/tasks/test-upgrade.yml
           input_mapping:
@@ -267,7 +251,6 @@ jobs:
             new-director-state:  director-state
           params:
             DEPLOYMENT_NAME:     certification
-
         ensure:
           <<: *teardown
 
@@ -279,13 +262,11 @@ jobs:
         - {get: cpi-release,  trigger: true, passed: [bats-centos, end2end-us]}
         - {get: stemcell,     trigger: true, passed: [bats-centos, end2end-us, test-upgrade], resource: centos-stemcell}
         - {get: pipelines,    trigger: false}
-
       - task: generate
         file: pipelines/shared/tasks/generate-receipt.yml
         params:
           CPI_RELEASE_NAME: bosh-aws-cpi
           STEMCELL_NAME:    *centos-stemcell
-
       - {put: receipt, params: {file: certification/*-receipt.json}}
 
   - name: certify-ubuntu
@@ -296,13 +277,11 @@ jobs:
         - {get: cpi-release,  trigger: true, passed: [bats-ubuntu, end2end-us]}
         - {get: stemcell,     trigger: true, passed: [bats-ubuntu, end2end-us, test-upgrade], resource: ubuntu-stemcell}
         - {get: pipelines,    trigger: false}
-
       - task: generate
         file: pipelines/shared/tasks/generate-receipt.yml
         params:
           CPI_RELEASE_NAME: bosh-aws-cpi
           STEMCELL_NAME:    *ubuntu-stemcell
-
       - {put: receipt, params: {file: certification/*-receipt.json}}
 
   - name: recreate-infrastructure-us
@@ -345,50 +324,46 @@ resources:
     source:
       start: 12:00 AM -0700
       stop: 2:00 AM -0700
-
   - name: pipelines
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
       branch: master
-
+  - name: bosh-deployment
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-deployment
+      branch: master
   - name: cpi-release
     type: bosh-io-release
     source:
       repository: cloudfoundry-incubator/bosh-aws-cpi-release
-
   - name: bosh-release
     type: bosh-io-release
     source:
       repository: cloudfoundry/bosh
-
   - name: bats
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
       branch: master
-
   - name: ubuntu-stemcell
     type: bosh-io-stemcell
     source:
       name: &ubuntu-stemcell bosh-aws-xen-hvm-ubuntu-trusty-go_agent
-
   - name: heavy-ubuntu-stemcell
     type: bosh-io-stemcell
     source:
       name: &heavy-ubuntu-stemcell bosh-aws-xen-ubuntu-trusty-go_agent
       force_regular: true
-
   - name: old-ubuntu-stemcell
     type: bosh-io-stemcell
     source:
       name: *ubuntu-stemcell
-
   - name: centos-stemcell
     type: bosh-io-stemcell
     source:
       name: &centos-stemcell bosh-aws-xen-hvm-centos-7-go_agent
-
   - name: bosh-cli
     type: s3
     source:
@@ -396,7 +371,6 @@ resources:
       cloudfront_url: https://dulfnruy35dwq.cloudfront.net
       bucket: bosh-cli-artifacts
       region_name: us-east-1
-
   - name: receipt
     type: s3
     source:

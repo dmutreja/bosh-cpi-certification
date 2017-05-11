@@ -1,0 +1,10 @@
+- type: replace
+  path: /resource_pools/name=vms/stemcell?
+  value:
+    url: ((stemcell_uri))
+
+- type: replace
+  path: /releases/name=bosh
+  value:
+    name: bosh
+    url: ((bosh_release_uri))

@@ -27,6 +27,7 @@ pushd ${input_dir} > /dev/null
   : ${BOSH_ENVIRONMENT:?}
   : ${BOSH_CLIENT:?}
   : ${BOSH_CLIENT_SECRET:?}
+  export BOSH_CA_CERT="${input_dir}/ca_cert.pem"
 
   # Don't exit on failure to delete existing deployment
   set +e
@@ -38,5 +39,5 @@ pushd ${input_dir} > /dev/null
   set -e
 
   echo "deleting existing BOSH Director VM..."
-  $bosh_cli -n delete-env director.yml
+  $bosh_cli -n delete-env --vars-store "${input_dir}/creds.yml" -v director_name=bosh director.yml
 popd

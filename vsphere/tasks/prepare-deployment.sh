@@ -31,7 +31,7 @@ echo Using environment: \'${env_name}\'
 : ${RESERVED_RANGE:=$(               env_attr "${network1}" "reservedRange" )}
 : ${STATIC_RANGE:=$(                 env_attr "${network1}" "staticRange" )}
 
-export BOSH_ENVIRONMENT="${DIRECTOR_IP//./-}.sslip.io"
+export BOSH_ENVIRONMENT="${DIRECTOR_IP}"
 
 cat > "${manifest_dir}/deployment.yml" <<EOF
 ---

@@ -21,6 +21,7 @@ export AWS_DEFAULT_REGION=${AWS_REGION_NAME}
 stemcell_path="$(realpath stemcell/*.tgz)"
 heavy_stemcell_path="$(realpath heavy-stemcell/*.tgz)"
 e2e_release="$(realpath pipelines/aws/assets/e2e-test-release)"
+director_state=$(realpath director-state)
 bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
 chmod +x $bosh_cli
 
@@ -30,7 +31,8 @@ chmod +x $bosh_cli
 : ${IAM_INSTANCE_PROFILE:=$( stack_info "IAMInstanceProfile")}
 : ${ELB_NAME:=$(             stack_info "ELB")}
 
-export BOSH_ENVIRONMENT="${DIRECTOR_IP//./-}.sslip.io"
+export BOSH_ENVIRONMENT="${DIRECTOR_IP}"
+export BOSH_CA_CERT="${director_state}/ca_cert.pem"
 
 e2e_deployment_name=e2e-test
 e2e_release_version=1.0.0

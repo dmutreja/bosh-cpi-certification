@@ -10,6 +10,7 @@ inputs:
   - name: heavy-stemcell
   - name: pipelines
   - name: bosh-cli
+  - name: director-state
 
 run:
   path: pipelines/aws/tasks/run-e2e.sh

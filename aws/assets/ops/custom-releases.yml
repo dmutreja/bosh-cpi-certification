@@ -1,0 +1,5 @@
+- type: replace
+  path: /releases/name=bosh-aws-cpi
+  value:
+    name: bosh-aws-cpi
+    url: ((cpi_release_uri))

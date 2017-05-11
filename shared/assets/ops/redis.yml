@@ -1,0 +1,12 @@
+- type: replace
+  path: /instance_groups/name=bosh/jobs/-
+  value:
+    name: redis
+    release: bosh
+
+- type: replace
+  path: /instance_groups/name=bosh/properties/redis?
+  value:
+    listen_addresss: 127.0.0.1
+    address: 127.0.0.1
+    password: ((redis_password))

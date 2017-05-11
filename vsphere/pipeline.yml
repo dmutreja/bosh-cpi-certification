@@ -27,7 +27,6 @@ shared:
       BOSH_VSPHERE_VCENTER_VM_FOLDER:       {{VCENTER_VM_FOLDER}}
       BOSH_VSPHERE_VCENTER_TEMPLATE_FOLDER: {{VCENTER_TEMPLATE_FOLDER}}
       BOSH_VSPHERE_VCENTER_DISK_PATH:       {{VCENTER_DISK_PATH}}
-      SSLIP_IO_CREDS:                       {{sslip_io_creds}}
 
   - &deploy-director
     task: deploy-director
@@ -67,57 +66,45 @@ jobs:
         - {get: pipelines,      tags: [vsphere-v5.1], trigger: false}
         - {get: bosh-cli,       tags: [vsphere-v5.1], trigger: false}
         - {get: bats,           tags: [vsphere-v5.1], trigger: false}
-
+        - {get: bosh-deployment, tags: [vsphere-v5.1], trigger: false}
       - {put: environment, tags: [vsphere-v5.1], params: {acquire: true}}
-
       - <<: *prepare-director
-
       - do:
           - <<: *deploy-director
-
           - <<: *prepare-bats
             params:
               <<: *prepare-bats-params
               STEMCELL_NAME: bosh-vsphere-esxi-centos-7-go_agent
-
           - <<: *run-bats
-
         ensure:
           do:
             - <<: *teardown
-
             - {put: environment, tags: [vsphere-v5.1], params: {release: environment}}
 
   - name: bats-ubuntu
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release,   tags: [vsphere-v5.1], trigger: true}
-        - {get: cpi-release,    tags: [vsphere-v5.1], trigger: true}
-        - {get: stemcell,       tags: [vsphere-v5.1], trigger: true, resource: ubuntu-stemcell}
-        - {get: after-midnight, tags: [vsphere-v5.1], trigger: true}
-        - {get: pipelines,      tags: [vsphere-v5.1], trigger: false}
-        - {get: bosh-cli,       tags: [vsphere-v5.1], trigger: false}
-        - {get: bats,           tags: [vsphere-v5.1], trigger: false}
-
+        - {get: bosh-release,    tags: [vsphere-v5.1], trigger: true}
+        - {get: cpi-release,     tags: [vsphere-v5.1], trigger: true}
+        - {get: stemcell,        tags: [vsphere-v5.1], trigger: true, resource: ubuntu-stemcell}
+        - {get: after-midnight,  tags: [vsphere-v5.1], trigger: true}
+        - {get: pipelines,       tags: [vsphere-v5.1], trigger: false}
+        - {get: bosh-cli,        tags: [vsphere-v5.1], trigger: false}
+        - {get: bats,            tags: [vsphere-v5.1], trigger: false}
+        - {get: bosh-deployment, tags: [vsphere-v5.1], trigger: false}
       - {put: environment, tags: [vsphere-v5.1], params: {acquire: true}}
-
       - <<: *prepare-director
-
       - do:
           - <<: *deploy-director
-
           - <<: *prepare-bats
             params:
               <<: *prepare-bats-params
               STEMCELL_NAME: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-
           - <<: *run-bats
-
         ensure:
           do:
             - <<: *teardown
-
             - {put: environment, tags: [vsphere-v5.1], params: {release: environment}}
 
   - name: test-upgrade
@@ -134,9 +121,8 @@ jobs:
         - {get: old-stemcell,     tags: [vsphere-v5.1], trigger: false}
         - {get: old-bosh-release, tags: [vsphere-v5.1], trigger: false, version: {version: "255.4"}, resource: bosh-release}
         - {get: old-cpi-release,  tags: [vsphere-v5.1], trigger: false, version: {version: "14"},  resource: cpi-release}
-
+        - {get: bosh-deployment, tags: [vsphere-v5.1], trigger: false}
       - {put: environment, tags: [vsphere-v5.1], params: {acquire: true}}
-
       - <<: *prepare-director
         input_mapping:
           stemcell:     old-stemcell
@@ -145,14 +131,12 @@ jobs:
         params:
           <<: *prepare-director-params
           USE_REDIS:         true
-
       - do:
           - <<: *deploy-director
             input_mapping:
               stemcell:     old-stemcell
               bosh-release: old-bosh-release
               cpi-release:  old-cpi-release
-
           - task: prepare-deployment
             tags: [vsphere-v5.1]
             file: pipelines/vsphere/tasks/prepare-deployment.yml
@@ -163,7 +147,6 @@ jobs:
               BOSH_CLIENT:               {{BOSH_CLIENT}}
               BOSH_CLIENT_SECRET:        {{BOSH_CLIENT_SECRET}}
               BOSH_VSPHERE_VCENTER_VLAN: {{VCENTER_VLAN}}
-
           - task: create-deployment
             tags: [vsphere-v5.1]
             file: pipelines/vsphere/tasks/create-deployment.yml
@@ -174,9 +157,7 @@ jobs:
               BOSH_CLIENT_SECRET:        {{BOSH_CLIENT_SECRET}}
               RELEASE_NAME:              certification
               DEPLOYMENT_NAME:           certification
-
           - <<: *prepare-director
-
           - task: test-upgrade
             tags: [vsphere-v5.1]
             file: pipelines/shared/tasks/test-upgrade.yml
@@ -187,11 +168,9 @@ jobs:
               new-director-state: director-state
             params:
               DEPLOYMENT_NAME:        certification
-
         ensure:
           do:
             - <<: *teardown
-
             - {put: environment, tags: [vsphere-v5.1], params: {release: environment}}
 
   - name: certify-centos
@@ -236,53 +215,49 @@ resources:
     source:
       start: 12:00 AM -0700
       stop: 2:00 AM -0700
-
   - name: pipelines
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
       branch: master
-
+  - name: bosh-deployment
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-deployment
+      branch: master
   - name: cpi-release
     type: bosh-io-release
     source:
       repository: cloudfoundry-incubator/bosh-vsphere-cpi-release
-
   - name: bosh-release
     type: bosh-io-release
     source:
       repository: cloudfoundry/bosh
-
   - name: bats
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
       branch: master
-
   - name: centos-stemcell
     type: bosh-io-stemcell
     source:
       name: bosh-vsphere-esxi-centos-7-go_agent
-
   - name: ubuntu-stemcell
     type: bosh-io-stemcell
     source:
       name: bosh-vsphere-esxi-ubuntu-trusty-go_agent
-
   - name: old-stemcell
     type: s3
     source:
       bucket: bosh-cpi-certification-fixtures
       regexp: bosh-stemcell-(3213)-vsphere-esxi-ubuntu-trusty-go_agent.tgz
       region_name: us-east-1
-
   - name: bosh-cli
     type: s3
     source:
       regexp: bosh-cli-([0-9.]+)-linux-amd64
       bucket: bosh-cli-artifacts
       region_name: us-east-1
-
   - name: receipt
     type: s3
     source:
@@ -291,7 +266,6 @@ resources:
       bucket: {{certification__bucket}}
       regexp: .*-(\d+)-receipt\.json
       region_name: us-east-1
-
   - name: environment
     type: pool
     source:

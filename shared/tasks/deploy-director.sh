@@ -41,9 +41,18 @@ pushd ${output_dir} > /dev/null
   echo "deploying BOSH..."
 
   set +e
-  BOSH_LOG_PATH=$logfile BOSH_LOG_LEVEL=DEBUG $bosh_cli create-env ./director.yml
+  BOSH_LOG_PATH=$logfile BOSH_LOG_LEVEL=DEBUG $bosh_cli create-env \
+    --vars-store "${output_dir}/creds.yml" \
+    -v director_name=bosh \
+    director.yml
   bosh_cli_exit_code="$?"
   set -e
+
+  # saves Director CA Certificate
+  ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["director_ssl"]["ca"]' \
+    < "${output_dir}/creds.yml" > "${output_dir}/ca_cert.pem"
+  ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["director_ssl"]["certificate"]' \
+    < "${output_dir}/creds.yml" >> "${output_dir}/ca_cert.pem"
 
   if [ ${bosh_cli_exit_code} != 0 ]; then
     echo "bosh-cli deploy failed!" >&2

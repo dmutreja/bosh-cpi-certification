@@ -9,6 +9,7 @@ inputs:
   - name: deployment-manifest
   - name: pipelines
   - name: stemcell
+  - name: director-state
 
 run:
   path: pipelines/aws/tasks/create-deployment.sh

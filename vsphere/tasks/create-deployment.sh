@@ -13,6 +13,7 @@ source pipelines/shared/utils.sh
 env_name=$(cat environment/name)
 stemcell_dir=$(realpath stemcell)
 manifest_dir=$(realpath deployment-manifest)
+director_state=$(realpath director-state)
 metadata=$(cat environment/metadata)
 network1=$(env_attr "${metadata}" "network1")
 deployment_release=$(realpath pipelines/shared/assets/certification-release)
@@ -22,7 +23,9 @@ chmod +x $bosh_cli
 echo "Using environment: \'${env_name}\'"
 : ${DIRECTOR_IP:=$(env_attr "${metadata}" "directorIP" )}
 
-export BOSH_ENVIRONMENT="${DIRECTOR_IP//./-}.sslip.io"
+# retrieve ca cert and certificate from director_ssl key from vars-creds.yml
+export BOSH_ENVIRONMENT="${DIRECTOR_IP}"
+export BOSH_CA_CERT="${director_state}/ca_cert.pem"
 
 pushd ${deployment_release}
   time $bosh_cli -n create-release --force --name ${RELEASE_NAME}

@@ -1,0 +1,5 @@
+- type: replace
+  path: /releases/name=bosh-vsphere-cpi
+  value:
+    name: bosh-vsphere-cpi
+    url: ((cpi_release_uri))
