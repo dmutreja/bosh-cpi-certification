@@ -11,7 +11,7 @@ groups:
 shared:
   - &prepare-director
     task: prepare-director
-    tags: [vsphere-v5.1]
+    tags: [vsphere-v6.0]
     file: pipelines/vsphere/tasks/prepare-director.yml
     params: &prepare-director-params
       BOSH_CLIENT:                          {{BOSH_CLIENT}}
@@ -30,12 +30,12 @@ shared:
 
   - &deploy-director
     task: deploy-director
-    tags: [vsphere-v5.1]
+    tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/deploy-director.yml
 
   - &prepare-bats
     task: prepare-bats
-    tags: [vsphere-v5.1]
+    tags: [vsphere-v6.0]
     file: pipelines/vsphere/tasks/prepare-bats.yml
     params: &prepare-bats-params
       BAT_VCAP_PASSWORD:      {{BAT_VCAP_PASSWORD}}
@@ -44,12 +44,12 @@ shared:
 
   - &run-bats
     task: run-bats
-    tags: [vsphere-v5.1]
+    tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/run-bats.yml
 
   - &teardown
     task: teardown
-    tags: [vsphere-v5.1]
+    tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/teardown.yml
     params:
       DEPLOYMENT_NAME: certification
@@ -59,15 +59,15 @@ jobs:
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release,   tags: [vsphere-v5.1], trigger: true}
-        - {get: cpi-release,    tags: [vsphere-v5.1], trigger: true}
-        - {get: stemcell,       tags: [vsphere-v5.1], trigger: true, resource: centos-stemcell}
-        - {get: after-midnight, tags: [vsphere-v5.1], trigger: true}
-        - {get: pipelines,      tags: [vsphere-v5.1], trigger: false}
-        - {get: bosh-cli,       tags: [vsphere-v5.1], trigger: false}
-        - {get: bats,           tags: [vsphere-v5.1], trigger: false}
-        - {get: bosh-deployment, tags: [vsphere-v5.1], trigger: false}
-      - {put: environment, tags: [vsphere-v5.1], params: {acquire: true}}
+        - {get: bosh-release,    tags: [vsphere-v6.0], trigger: true}
+        - {get: cpi-release,     tags: [vsphere-v6.0], trigger: true}
+        - {get: stemcell,        tags: [vsphere-v6.0], trigger: true, resource: centos-stemcell}
+        - {get: after-midnight,  tags: [vsphere-v6.0], trigger: true}
+        - {get: pipelines,       tags: [vsphere-v6.0], trigger: false}
+        - {get: bosh-cli,        tags: [vsphere-v6.0], trigger: false}
+        - {get: bats,            tags: [vsphere-v6.0], trigger: false}
+        - {get: bosh-deployment, tags: [vsphere-v6.0], trigger: false}
+      - {put: environment, tags: [vsphere-v6.0], params: {acquire: true}}
       - <<: *prepare-director
       - do:
           - <<: *deploy-director
@@ -79,21 +79,21 @@ jobs:
         ensure:
           do:
             - <<: *teardown
-            - {put: environment, tags: [vsphere-v5.1], params: {release: environment}}
+            - {put: environment, tags: [vsphere-v6.0], params: {release: environment}}
 
   - name: bats-ubuntu
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release,    tags: [vsphere-v5.1], trigger: true}
-        - {get: cpi-release,     tags: [vsphere-v5.1], trigger: true}
-        - {get: stemcell,        tags: [vsphere-v5.1], trigger: true, resource: ubuntu-stemcell}
-        - {get: after-midnight,  tags: [vsphere-v5.1], trigger: true}
-        - {get: pipelines,       tags: [vsphere-v5.1], trigger: false}
-        - {get: bosh-cli,        tags: [vsphere-v5.1], trigger: false}
-        - {get: bats,            tags: [vsphere-v5.1], trigger: false}
-        - {get: bosh-deployment, tags: [vsphere-v5.1], trigger: false}
-      - {put: environment, tags: [vsphere-v5.1], params: {acquire: true}}
+        - {get: bosh-release,    tags: [vsphere-v6.0], trigger: true}
+        - {get: cpi-release,     tags: [vsphere-v6.0], trigger: true}
+        - {get: stemcell,        tags: [vsphere-v6.0], trigger: true, resource: ubuntu-stemcell}
+        - {get: after-midnight,  tags: [vsphere-v6.0], trigger: true}
+        - {get: pipelines,       tags: [vsphere-v6.0], trigger: false}
+        - {get: bosh-cli,        tags: [vsphere-v6.0], trigger: false}
+        - {get: bats,            tags: [vsphere-v6.0], trigger: false}
+        - {get: bosh-deployment, tags: [vsphere-v6.0], trigger: false}
+      - {put: environment, tags: [vsphere-v6.0], params: {acquire: true}}
       - <<: *prepare-director
       - do:
           - <<: *deploy-director
@@ -105,24 +105,24 @@ jobs:
         ensure:
           do:
             - <<: *teardown
-            - {put: environment, tags: [vsphere-v5.1], params: {release: environment}}
+            - {put: environment, tags: [vsphere-v6.0], params: {release: environment}}
 
   - name: test-upgrade
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release,     tags: [vsphere-v5.1], trigger: true}
-        - {get: cpi-release,      tags: [vsphere-v5.1], trigger: true}
-        - {get: stemcell,         tags: [vsphere-v5.1], trigger: true, resource: ubuntu-stemcell}
-        - {get: after-midnight,   tags: [vsphere-v5.1], trigger: true}
-        - {get: pipelines,        tags: [vsphere-v5.1], trigger: false}
-        - {get: bosh-cli,         tags: [vsphere-v5.1], trigger: false}
-        - {get: centos-stemcell,  tags: [vsphere-v5.1], trigger: false} # pass-through
-        - {get: old-stemcell,     tags: [vsphere-v5.1], trigger: false}
-        - {get: old-bosh-release, tags: [vsphere-v5.1], trigger: false, version: {version: "255.4"}, resource: bosh-release}
-        - {get: old-cpi-release,  tags: [vsphere-v5.1], trigger: false, version: {version: "14"},  resource: cpi-release}
-        - {get: bosh-deployment, tags: [vsphere-v5.1], trigger: false}
-      - {put: environment, tags: [vsphere-v5.1], params: {acquire: true}}
+        - {get: bosh-release,     tags: [vsphere-v6.0], trigger: true}
+        - {get: cpi-release,      tags: [vsphere-v6.0], trigger: true}
+        - {get: stemcell,         tags: [vsphere-v6.0], trigger: true, resource: ubuntu-stemcell}
+        - {get: after-midnight,   tags: [vsphere-v6.0], trigger: true}
+        - {get: pipelines,        tags: [vsphere-v6.0], trigger: false}
+        - {get: bosh-cli,         tags: [vsphere-v6.0], trigger: false}
+        - {get: centos-stemcell,  tags: [vsphere-v6.0], trigger: false} # pass-through
+        - {get: old-stemcell,     tags: [vsphere-v6.0], trigger: false}
+        - {get: old-bosh-release, tags: [vsphere-v6.0], trigger: false, version: {version: "255.4"}, resource: bosh-release}
+        - {get: old-cpi-release,  tags: [vsphere-v6.0], trigger: false, version: {version: "14"},  resource: cpi-release}
+        - {get: bosh-deployment,  tags: [vsphere-v6.0], trigger: false}
+      - {put: environment, tags: [vsphere-v6.0], params: {acquire: true}}
       - <<: *prepare-director
         input_mapping:
           stemcell:     old-stemcell
@@ -138,7 +138,7 @@ jobs:
               bosh-release: old-bosh-release
               cpi-release:  old-cpi-release
           - task: prepare-deployment
-            tags: [vsphere-v5.1]
+            tags: [vsphere-v6.0]
             file: pipelines/vsphere/tasks/prepare-deployment.yml
             params:
               RELEASE_NAME:              certification
@@ -148,7 +148,7 @@ jobs:
               BOSH_CLIENT_SECRET:        {{BOSH_CLIENT_SECRET}}
               BOSH_VSPHERE_VCENTER_VLAN: {{VCENTER_VLAN}}
           - task: create-deployment
-            tags: [vsphere-v5.1]
+            tags: [vsphere-v6.0]
             file: pipelines/vsphere/tasks/create-deployment.yml
             input_mapping:
               stemcell:                  old-stemcell
@@ -159,7 +159,7 @@ jobs:
               DEPLOYMENT_NAME:           certification
           - <<: *prepare-director
           - task: test-upgrade
-            tags: [vsphere-v5.1]
+            tags: [vsphere-v6.0]
             file: pipelines/shared/tasks/test-upgrade.yml
             input_mapping:
               old-director-state: director-state
@@ -171,43 +171,43 @@ jobs:
         ensure:
           do:
             - <<: *teardown
-            - {put: environment, tags: [vsphere-v5.1], params: {release: environment}}
+            - {put: environment, tags: [vsphere-v6.0], params: {release: environment}}
 
   - name: certify-centos
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release, tags: [vsphere-v5.1], trigger: true, passed: [bats-centos]}
-        - {get: cpi-release,  tags: [vsphere-v5.1], trigger: true, passed: [bats-centos]}
-        - {get: stemcell,     tags: [vsphere-v5.1], trigger: true, passed: [bats-centos, test-upgrade], resource: centos-stemcell}
-        - {get: pipelines,    tags: [vsphere-v5.1], trigger: false}
+        - {get: bosh-release, tags: [vsphere-v6.0], trigger: true, passed: [bats-centos]}
+        - {get: cpi-release,  tags: [vsphere-v6.0], trigger: true, passed: [bats-centos]}
+        - {get: stemcell,     tags: [vsphere-v6.0], trigger: true, passed: [bats-centos, test-upgrade], resource: centos-stemcell}
+        - {get: pipelines,    tags: [vsphere-v6.0], trigger: false}
 
       - task: generate
         file: pipelines/shared/tasks/generate-receipt.yml
-        tags: [vsphere-v5.1]
+        tags: [vsphere-v6.0]
         params:
           CPI_RELEASE_NAME: bosh-vsphere-cpi
           STEMCELL_NAME:    bosh-vsphere-esxi-centos-7-go_agent
 
-      - {put: receipt, tags: [vsphere-v5.1], params: {file: certification/*-receipt.json}}
+      - {put: receipt, tags: [vsphere-v6.0], params: {file: certification/*-receipt.json}}
 
   - name: certify-ubuntu
     serial: true
     plan:
       - aggregate:
-        - {get: bosh-release, tags: [vsphere-v5.1], trigger: true, passed: [bats-ubuntu]}
-        - {get: cpi-release,  tags: [vsphere-v5.1], trigger: true, passed: [bats-ubuntu]}
-        - {get: stemcell,     tags: [vsphere-v5.1], trigger: true, passed: [bats-ubuntu, test-upgrade], resource: ubuntu-stemcell}
-        - {get: pipelines,    tags: [vsphere-v5.1], trigger: false}
+        - {get: bosh-release, tags: [vsphere-v6.0], trigger: true, passed: [bats-ubuntu]}
+        - {get: cpi-release,  tags: [vsphere-v6.0], trigger: true, passed: [bats-ubuntu]}
+        - {get: stemcell,     tags: [vsphere-v6.0], trigger: true, passed: [bats-ubuntu, test-upgrade], resource: ubuntu-stemcell}
+        - {get: pipelines,    tags: [vsphere-v6.0], trigger: false}
 
       - task: generate
         file: pipelines/shared/tasks/generate-receipt.yml
-        tags: [vsphere-v5.1]
+        tags: [vsphere-v6.0]
         params:
           CPI_RELEASE_NAME: bosh-vsphere-cpi
           STEMCELL_NAME:    bosh-vsphere-esxi-ubuntu-trusty-go_agent
 
-      - {put: receipt, tags: [vsphere-v5.1], params: {file: certification/*-receipt.json}}
+      - {put: receipt, tags: [vsphere-v6.0], params: {file: certification/*-receipt.json}}
 
 resources:
   - name: after-midnight
