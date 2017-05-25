@@ -10,6 +10,7 @@ source pipelines/shared/utils.sh
 : ${BOSH_VSPHERE_VERSION:?}
 : ${BOSH_VSPHERE_VCENTER_DC:?}
 : ${BOSH_VSPHERE_VCENTER_CLUSTER:?}
+: ${BOSH_VSPHERE_VCENTER_RESOURCE_POOL:?}
 : ${BOSH_VSPHERE_VCENTER_VM_FOLDER:?}
 : ${BOSH_VSPHERE_VCENTER_TEMPLATE_FOLDER:?}
 : ${BOSH_VSPHERE_VCENTER_DATASTORE:?}
@@ -67,6 +68,7 @@ vcenter_templates: ${BOSH_VSPHERE_VCENTER_TEMPLATE_FOLDER}
 vcenter_ds: ${BOSH_VSPHERE_VCENTER_DATASTORE}
 vcenter_disks: ${BOSH_VSPHERE_VCENTER_DISK_PATH}
 vcenter_cluster: ${BOSH_VSPHERE_VCENTER_CLUSTER}
+vcenter_rp: ${BOSH_VSPHERE_VCENTER_RESOURCE_POOL}
 network_name: ${BOSH_VSPHERE_VCENTER_VLAN}
 internal_gw: ${BOSH_VSPHERE_VCENTER_GATEWAY}
 internal_cidr: ${BOSH_VSPHERE_VCENTER_CIDR}
@@ -79,9 +81,10 @@ EOF
 
 ${bosh_cli} interpolate \
   --ops-file ${bosh_deployment}/vsphere/cpi.yml \
+  --ops-file ${bosh_deployment}/vsphere/resource-pool.yml \
   --ops-file ${bosh_deployment}/powerdns.yml \
   --ops-file pipelines/shared/assets/ops/custom-releases.yml \
-    --ops-file pipelines/vsphere/assets/ops/custom-releases.yml \
+  --ops-file pipelines/vsphere/assets/ops/custom-releases.yml \
   $(echo ${redis_ops}) \
   -v bosh_release_uri="${BOSH_RELEASE_URI}" \
   -v cpi_release_uri="${CPI_RELEASE_URI}" \
