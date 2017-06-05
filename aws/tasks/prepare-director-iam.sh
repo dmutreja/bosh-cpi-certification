@@ -94,7 +94,7 @@ ${bosh_cli} interpolate \
   --ops-file ${bosh_deployment}/powerdns.yml \
   --ops-file pipelines/shared/assets/ops/custom-releases.yml \
   --ops-file pipelines/aws/assets/ops/custom-releases.yml \
-  --ops-file pipelines/aws/assets/ops/networking.yml \
+  --ops-file ${bosh_deployment}/external-ip-with-registry-not-recommended.yml \
   --ops-file /tmp/aws-ops.yml \
   -v bosh_release_uri="${BOSH_RELEASE_URI}" \
   -v cpi_release_uri="${CPI_RELEASE_URI}" \
