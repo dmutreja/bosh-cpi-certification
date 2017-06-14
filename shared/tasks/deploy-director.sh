@@ -53,8 +53,9 @@ pushd ${output_dir} > /dev/null
     < "${output_dir}/creds.yml" > "${output_dir}/ca_cert.pem"
   ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["director_ssl"]["certificate"]' \
     < "${output_dir}/creds.yml" >> "${output_dir}/ca_cert.pem"
-  ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["ssh"]["private_key"]' \
-    < "${output_dir}/creds.yml" > "${output_dir}/shared.pem"
+  private_key=$( ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["ssh"]["private_key"] unless data["ssh"].nil?' \
+    < "${output_dir}/creds.yml")
+  [[ -n "${private_key}" ]] && echo "${private_key}" > "${output_dir}/shared.pem"
 
   if [ ${bosh_cli_exit_code} != 0 ]; then
     echo "bosh-cli deploy failed!" >&2
