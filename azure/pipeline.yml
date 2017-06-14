@@ -217,7 +217,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: azure-certification
+      branch: master
   - name: bosh-deployment
     type: git
     source:
