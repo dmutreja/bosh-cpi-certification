@@ -1,7 +1,7 @@
-variable "subscription_id" {}
-variable "client_id" {}
-variable "client_secret" {}
-variable "tenant_id" {}
+variable "azure_client_id" {}
+variable "azure_client_secret" {}
+variable "azure_subscription_id" {}
+variable "azure_tenant_id" {}
 variable "location" {
   default = "East US"
 }
@@ -9,10 +9,10 @@ variable "env_name" {}
 
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
-  subscription_id = "${var.subscription_id}"
-  client_id       = "${var.client_id}"
-  client_secret   = "${var.client_secret}"
-  tenant_id       = "${var.tenant_id}"
+  client_id       = "${var.azure_client_id}"
+  client_secret   = "${var.azure_client_secret}"
+  subscription_id = "${var.azure_subscription_id}"
+  tenant_id       = "${var.azure_tenant_id}"
 }
 # Create a resource group
 resource "azurerm_resource_group" "Azure_rg_bosh" {

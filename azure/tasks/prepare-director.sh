@@ -11,7 +11,7 @@ source pipelines/shared/utils.sh
 : ${AZURE_SUBSCRIPTION_ID:?}
 : ${BOSH_CLIENT_SECRET:?}
 : ${AZURE_DNS:?}
-: ${USE_REDIS:=false}
+: ${USE_REDIS:?}
 
 # inputs
 release_dir="$( cd $(dirname $0) && cd ../.. && pwd )"

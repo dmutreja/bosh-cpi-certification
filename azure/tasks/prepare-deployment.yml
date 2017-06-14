@@ -16,7 +16,6 @@ run:
   path: pipelines/azure/tasks/prepare-deployment.sh
 
 params:
-  BOSH_CLIENT:               admin
   BOSH_CLIENT_SECRET:        ""
   RELEASE_NAME:              ""
   STEMCELL_NAME:             ""

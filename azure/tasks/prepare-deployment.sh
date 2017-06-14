@@ -2,11 +2,9 @@
 
 set -e
 
-: ${BOSH_CLIENT:?}
 : ${BOSH_CLIENT_SECRET:?}
 : ${RELEASE_NAME:?}
 : ${STEMCELL_NAME:?}
-: ${AZURE_DNS:?}
 : ${DEPLOYMENT_NAME:?}
 
 source pipelines/shared/utils.sh
