@@ -1,0 +1,167 @@
+---
+groups:
+  - name: certify-azure
+    jobs:
+      - azure-provision
+      - bats-ubuntu
+
+shared:
+  - &prepare-director
+    task: prepare-director
+    file: pipelines/azure/tasks/prepare-director.yml
+    params: &prepare-director-params
+      DIRECTOR_IP:                  {{DIRECTOR_IP}}
+      BOSH_CLIENT:                  {{BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET:           {{BOSH_CLIENT_SECRET}}
+      AZURE_CLIENT_ID:              {{AZURE_CLIENT_ID}}
+      AZURE_CLIENT_SECRET:          {{AZURE_CLIENT_SECRET}}
+      AZURE_TENANT_ID:              {{AZURE_TENANT_ID}}
+      AZURE_SUBSCRIPTION_ID:        {{AZURE_SUBSCRIPTION_ID}}
+      AZURE_ENVIRONMENT:            {{AZURE_ENVIRONMENT}}
+      AZURE_DEFAULT_SECURITY_GROUP: {{AZURE_DEFAULT_SECURITY_GROUP}}
+      AZURE_VIRTUAL_NETWORK_NAME:   {{AZURE_VIRTUAL_NETWORK_NAME}}
+      AZURE_RESOURCE_GROUP_NAME:    {{AZURE_RESOURCE_GROUP_NAME}}
+      AZURE_STORAGE_ACCOUNT_NAME:   {{AZURE_STORAGE_ACCOUNT_NAME}}
+      AZURE_INTERNAL_GATEWAY:       {{AZURE_INTERNAL_GATEWAY}}
+      AZURE_INTERNAL_CIDR:          {{AZURE_INTERNAL_CIDR}}
+      AZURE_BOSH_SUBNET_NAME:       {{AZURE_BOSH_SUBNET_NAME}}
+      AZURE_DNS:                    {{AZURE_DNS}}
+      AZURE_DEBUG_MODE:             {{AZURE_DEBUG_MODE}}
+      USE_REDIS:                    {{USE_REDIS}}
+
+  - &deploy-director
+    task: deploy-director
+    file: pipelines/shared/tasks/deploy-director.yml
+
+  - &prepare-bats
+    task: prepare-bats
+    file: pipelines/azure/tasks/prepare-bats.yml
+    params: &prepare-bats-params
+      AZURE_CLIENT_ID:                      {{AZURE_CLIENT_ID}}
+      AZURE_CLIENT_SECRET:                  {{AZURE_CLIENT_SECRET}}
+      AZURE_TENANT_ID:                      {{AZURE_TENANT_ID}}
+      AZURE_ENVIRONMENT:                    {{AZURE_ENVIRONMENT}}
+      AZURE_RESOURCE_GROUP_NAME:            {{AZURE_RESOURCE_GROUP_NAME}}
+      AZURE_VIRTUAL_NETWORK_NAME:           {{AZURE_VIRTUAL_NETWORK_NAME}}
+      AZURE_CF_SUBNET_NAME:                 {{AZURE_CF_SUBNET_NAME}}
+      AZURE_CF_SECOND_SUBNET_NAME:          {{AZURE_CF_SECOND_SUBNET_NAME}}
+      AZURE_DEFAULT_SECURITY_GROUP:         {{AZURE_DEFAULT_SECURITY_GROUP}}
+      BAT_VCAP_PASSWORD:                    {{BAT_VCAP_PASSWORD}}
+      BAT_NETWORK_CIDR:                     {{BAT_NETWORK_CIDR}}
+      BAT_SECOND_NETWORK_CIDR:              {{BAT_SECOND_NETWORK_CIDR}}
+      BAT_SECOND_STATIC_IP:                 {{BAT_SECOND_STATIC_IP}}
+      BAT_NETWORK_RESERVED_RANGE:           {{BAT_NETWORK_RESERVED_RANGE}}
+      BAT_SECOND_NETWORK_RESERVED_RANGE:    {{BAT_SECOND_NETWORK_RESERVED_RANGE}}
+      BAT_NETWORK_STATIC_RANGE:             {{BAT_NETWORK_STATIC_RANGE}}
+      BAT_SECOND_NETWORK_STATIC_RANGE:      {{BAT_SECOND_NETWORK_STATIC_RANGE}}
+      BAT_NETWORK_GATEWAY:                  {{BAT_NETWORK_GATEWAY}}
+      BAT_SECOND_NETWORK_GATEWAY:           {{BAT_SECOND_NETWORK_GATEWAY}}
+      BAT_NETWORK_STATIC_IP:                {{BAT_NETWORK_STATIC_IP}}
+      BAT_SECOND_NETWORK_STATIC_IP:         {{BAT_SECOND_NETWORK_STATIC_IP}}
+      BAT_BASE_OS:                          {{BAT_BASE_OS}}
+      BOSH_CLIENT:                          {{BOSH_CLIENT}}
+      BOSH_CLIENT_SECRET:                   {{BOSH_CLIENT_SECRET}}
+
+  - &run-bats
+    task: run-bats
+    file: pipelines/shared/tasks/run-bats.yml
+
+  - &teardown
+    task: teardown
+    file: pipelines/shared/tasks/teardown.yml
+    params:
+      DEPLOYMENT_NAME: certification
+
+jobs:
+  - name: azure-provision
+    serial: true
+    plan:
+    - aggregate:
+      - {get: pipelines, trigger: false}
+
+    - task: azure-provision
+      file: pipelines/azure/tasks/azure-provision.yml
+      params:
+        AZURE_CLIENT_ID:                            {{AZURE_CLIENT_ID}}
+        AZURE_CLIENT_SECRET:                        {{AZURE_CLIENT_SECRET}}
+        AZURE_TENANT_ID:                            {{AZURE_TENANT_ID}}
+        AZURE_ENVIRONMENT:                          {{AZURE_ENVIRONMENT}}
+        AZURE_RESOURCE_GROUP_NAME:                  {{AZURE_RESOURCE_GROUP_NAME}}
+        AZURE_GROUP_NAME_FOR_NETWORK:               {{AZURE_GROUP_NAME_FOR_NETWORK}}
+        AZURE_GROUP_NAME_FOR_MANAGED_DISKS:         {{AZURE_GROUP_NAME_FOR_MANAGED_DISKS}}
+        AZURE_GROUP_NAME_FOR_NETWORK_MANAGED_DISKS: {{AZURE_GROUP_NAME_FOR_NETWORK_MANAGED_DISKS}}
+        AZURE_GROUP_NAME_FOR_CENTOS:                {{AZURE_GROUP_NAME_FOR_CENTOS}}
+        AZURE_GROUP_NAME_FOR_NETWORK_CENTOS:        {{AZURE_GROUP_NAME_FOR_NETWORK_CENTOS}}
+        AZURE_REGION_NAME:                          {{AZURE_REGION_NAME}}
+        AZURE_REGION_SHORT_NAME:                    {{AZURE_REGION_SHORT_NAME}}
+        AZURE_STORAGE_ACCOUNT_NAME:                 {{AZURE_STORAGE_ACCOUNT_NAME}}
+        AZURE_STORAGE_ACCOUNT_NAME_MANAGED_DISKS:   {{AZURE_STORAGE_ACCOUNT_NAME_MANAGED_DISKS}}
+        AZURE_VIRTUAL_NETWORK_NAME:                 {{AZURE_VIRTUAL_NETWORK_NAME}}
+        AZURE_BOSH_SUBNET_NAME:                     {{AZURE_BOSH_SUBNET_NAME}}
+        AZURE_BOSH_SECOND_SUBNET_NAME:              {{AZURE_BOSH_SECOND_SUBNET_NAME}}
+        AZURE_CF_SUBNET_NAME:                       {{AZURE_CF_SUBNET_NAME}}
+        AZURE_CF_SECOND_SUBNET_NAME:                {{AZURE_CF_SECOND_SUBNET_NAME}}
+        AZURE_DEFAULT_SECURITY_GROUP:               {{AZURE_DEFAULT_SECURITY_GROUP}}
+
+  - name: bats-ubuntu
+    serial: true
+    plan:
+      - aggregate:
+        - {get: bosh-release, trigger: true}
+        - {get: cpi-release,  trigger: true}
+        - {get: stemcell,     trigger: true,  resource: ubuntu-stemcell}
+        - {get: pipelines,    trigger: false,   passed: [azure-provision]}
+        - {get: bosh-cli,     trigger: false}
+        - {get: bats,         trigger: false}
+
+      - <<: *prepare-director
+
+      - do:
+          - <<: *deploy-director
+
+          - <<: *prepare-bats
+            params:
+              <<: *prepare-bats-params
+              STEMCELL_NAME: bosh-azure-hyperv-ubuntu-trusty-go_agent
+
+          - <<: *run-bats
+
+        ensure:
+          do:
+            - <<: *teardown
+
+resources:
+  - name: pipelines
+    type: git
+    source:
+      uri: https://github.com/OpusDude/bosh-cpi-certification
+      branch: master
+
+  - name: cpi-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/bosh-azure-cpi-release
+
+  - name: bosh-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/bosh
+
+  - name: bats
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
+      branch: master
+
+  - name: ubuntu-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-azure-hyperv-ubuntu-trusty-go_agent
+
+  - name: bosh-cli
+    type: s3
+    source:
+      regexp: bosh-cli-([0-9.]+)-linux-amd64
+      bucket: bosh-cli-artifacts
+      region_name: us-east-1
+

@@ -1,0 +1,22 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: boshcpi/cpi-certification}
+
+inputs:
+  - name: pipelines
+  - name: bats
+  - name: environment
+  - name: director-state
+
+outputs:
+  - name: bats-config
+
+run:
+  path: pipelines/azure/tasks/prepare-bats.sh
+
+params:
+  STEMCELL_NAME:      ""
+  BOSH_CLIENT_SECRET: ""
+  BAT_VCAP_PASSWORD:  ""
