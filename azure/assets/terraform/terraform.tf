@@ -59,14 +59,14 @@ resource "azurerm_storage_account" "azure_bosh_sa" {
 resource "azurerm_storage_container" "azure_bosh_container" {
   name                  = "bosh"
   resource_group_name   = "${azurerm_resource_group.azure_rg_bosh.name}"
-  storage_account_name  = "${azurerm_storage_account.azureboshsa.name}"
+  storage_account_name  = "${azurerm_storage_account.azure_bosh_sa.name}"
   container_access_type = "private"
 }
 # Create a Storage Container for the stemcells
 resource "azurerm_storage_container" "azure_stemcell_container" {
   name                  = "stemcell"
   resource_group_name   = "${azurerm_resource_group.azure_rg_bosh.name}"
-  storage_account_name  = "${azurerm_storage_account.azureboshsa.name}"
+  storage_account_name  = "${azurerm_storage_account.azure_bosh_sa.name}"
   container_access_type = "blob"
 }
 
@@ -154,7 +154,7 @@ output "ResourceGroupName" {
   value = "${azurerm_resource_group.azure_rg_bosh.name}"
 }
 output "StorageAccountName" {
-  value = "${azurerm_storage_account.azureboshsa.name}"
+  value = "${azurerm_storage_account.azure_bosh_sa.name}"
 }
 output "DefaultSecurityGroup" {
   value = "${azurerm_network_security_group.azure_bosh_nsg.name}"
