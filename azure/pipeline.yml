@@ -237,7 +237,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: azure-certification
+      branch: master
   - name: receipt
     type: s3
     source:
