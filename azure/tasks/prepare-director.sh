@@ -35,14 +35,14 @@ CPI_RELEASE_URI="file://$( echo cpi-release/*.tgz )"
 STEMCELL_URI="file://$( echo stemcell/*.tgz )"
 
 # configuration
-: ${DIRECTOR_PIP:=$(           echo ${metadata} | jq --raw-output ".DirectorPublicIP" )}
-: ${NETWORK:=$(                echo ${metadata} | jq --raw-output ".Network" )}
-: ${SUBNET:=$(                 echo ${metadata} | jq --raw-output ".Subnetwork" )}
-: ${RESOURCE_GROUP_NAME:=$(    echo ${metadata} | jq --raw-output ".ResourceGroupName" )}
-: ${STORAGE_ACCOUNT_NAME:=$(   echo ${metadata} | jq --raw-output ".StorageAccountName" )}
-: ${DEFAULT_SECURITY_GROUP:=$( echo ${metadata} | jq --raw-output ".DefaultSecurityGroup" )}
-: ${INTERNAL_CIDR:=$(          echo ${metadata} | jq --raw-output ".InternalCIDR" )}
-: ${INTERNAL_GW:=$(            echo ${metadata} | jq --raw-output ".InternalGateway" )}
+: ${DIRECTOR_PIP:=$(           echo ${metadata} | jq --raw-output ".director_public_ip" )}
+: ${NETWORK:=$(                echo ${metadata} | jq --raw-output ".virtual_network_name" )}
+: ${SUBNET:=$(                 echo ${metadata} | jq --raw-output ".subnetwork" )}
+: ${RESOURCE_GROUP_NAME:=$(    echo ${metadata} | jq --raw-output ".resource_group_name" )}
+: ${STORAGE_ACCOUNT_NAME:=$(   echo ${metadata} | jq --raw-output ".storage_account_name" )}
+: ${DEFAULT_SECURITY_GROUP:=$( echo ${metadata} | jq --raw-output ".default_security_group" )}
+: ${INTERNAL_CIDR:=$(          echo ${metadata} | jq --raw-output ".internal_cidr" )}
+: ${INTERNAL_GW:=$(            echo ${metadata} | jq --raw-output ".internal_gateway" )}
 
 # outputs
 output_dir="${workspace_dir}/director-config"

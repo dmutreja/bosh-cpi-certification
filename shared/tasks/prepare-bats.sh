@@ -24,6 +24,7 @@ environment_dir="${workspace_dir}/environment"
 director_shared_pem="${workspace_dir}/director-state/shared.pem"
 bats_dir="${workspace_dir}/bats"
 bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
+chmod +x $bosh_cli
 
 # outputs
 output_dir="${workspace_dir}/bats-config"

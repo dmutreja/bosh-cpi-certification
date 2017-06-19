@@ -27,10 +27,12 @@ shared:
 
   - &prepare-bats
     task: prepare-bats
-    file: pipelines/azure/tasks/prepare-bats.yml
+    file: pipelines/shared/tasks/prepare-bats.yml
     params: &prepare-bats-params
       BOSH_CLIENT_SECRET: {{bosh_client_secret}}
       BAT_VCAP_PASSWORD:  {{bat_vcap_password}}
+      INCLUDE_FILE:       pipelines/azure/assets/bats/include.sh
+      BATS_SPEC:          pipelines/azure/assets/bats/bats-spec.yml
 
   - &run-bats
     task: run-bats
@@ -217,7 +219,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: master
+      branch: refactor
   - name: bosh-deployment
     type: git
     source:

@@ -141,54 +141,54 @@ resource "azurerm_public_ip" "azure_ip_bats" {
   public_ip_address_allocation = "static"
 }
 
-output "DirectorPublicIP" {
+output "director_public_ip" {
   value = "${azurerm_public_ip.azure_ip_bosh.ip_address}"
 }
-output "Network" {
+output "virtual_network_name" {
   value = "${azurerm_virtual_network.azure_bosh_network.name}"
 }
-output "Subnetwork" {
+output "subnetwork" {
   value = "${azurerm_subnet.azure_bosh_subnet.name}"
 }
-output "ResourceGroupName" {
+output "resource_group_name" {
   value = "${azurerm_resource_group.azure_rg_bosh.name}"
 }
-output "StorageAccountName" {
+output "storage_account_name" {
   value = "${azurerm_storage_account.azure_bosh_sa.name}"
 }
-output "DefaultSecurityGroup" {
+output "default_security_group" {
   value = "${azurerm_network_security_group.azure_bosh_nsg.name}"
 }
-output "InternalCIDR" {
+output "internal_cidr" {
   value = "${azurerm_subnet.azure_bosh_subnet.address_prefix}"
 }
-output "InternalGateway" {
+output "internal_gateway" {
   value = "${cidrhost(azurerm_subnet.azure_bosh_subnet.address_prefix, 1)}"
 }
-output "ReservedRange" {
+output "reserved_range" {
   value = "${cidrhost(azurerm_subnet.azure_bosh_subnet.address_prefix, 2)}-${cidrhost(azurerm_subnet.azure_bosh_subnet.address_prefix, 6)}"
 }
-output "BATsPublicIP" {
+output "bats_public_ip" {
   value = "${azurerm_public_ip.azure_ip_bats.ip_address}"
 }
-output "BATsNetwork" {
+output "bats_first_network" {
   value = {
-    Name = "${azurerm_subnet.azure_bats_subnet.name}"
-    CIDR = "${azurerm_subnet.azure_bats_subnet.address_prefix}"
-    Gateway = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 1)}"
-    ReservedRange = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 2)}-${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 3)}"
-    StaticRange =  "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 4)}-${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 10)}"
-    StaticIP = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 4)}"
-    StaticIP_2 = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 5)}"
+    name = "${azurerm_subnet.azure_bats_subnet.name}"
+    cidr = "${azurerm_subnet.azure_bats_subnet.address_prefix}"
+    gateway = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 1)}"
+    reserved_range = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 2)}-${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 3)}"
+    static_range =  "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 4)}-${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 10)}"
+    static_ip_1 = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 4)}"
+    static_ip_2 = "${cidrhost(azurerm_subnet.azure_bats_subnet.address_prefix, 5)}"
   }
 }
-output "BATsSecondNetwork" {
+output "bats_second_network" {
   value = {
-    Name = "${azurerm_subnet.azure_bats_subnet_2.name}"
-    CIDR = "${azurerm_subnet.azure_bats_subnet_2.address_prefix}"
-    Gateway = "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 1)}"
-    ReservedRange = "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 2)}-${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 3)}"
-    StaticRange =  "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 4)}-${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 10)}"
-    StaticIP = "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 4)}"
+    name = "${azurerm_subnet.azure_bats_subnet_2.name}"
+    cidr = "${azurerm_subnet.azure_bats_subnet_2.address_prefix}"
+    gateway = "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 1)}"
+    reserved_range = "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 2)}-${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 3)}"
+    static_range =  "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 4)}-${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 10)}"
+    static_ip_1 = "${cidrhost(azurerm_subnet.azure_bats_subnet_2.address_prefix, 4)}"
   }
 }

@@ -20,12 +20,12 @@ ci_environment_dir="${workspace_dir}/environment"
 metadata="$( cat ${ci_environment_dir}/metadata )"
 
 # configuration
-: ${DIRECTOR_PIP:=$(   echo ${metadata} | jq --raw-output ".DirectorPublicIP" )}
-: ${NETWORK:=$(        echo ${metadata} | jq --raw-output ".Network" )}
-: ${SUBNET:=$(         echo ${metadata} | jq --raw-output ".Subnetwork" )}
-: ${RESERVED_RANGE:=$( echo ${metadata} | jq --raw-output ".ReservedRange" )}
-: ${INTERNAL_CIDR:=$(  echo ${metadata} | jq --raw-output ".InternalCIDR" )}
-: ${INTERNAL_GW:=$(    echo ${metadata} | jq --raw-output ".InternalGateway" )}
+: ${DIRECTOR_PIP:=$(   echo ${metadata} | jq --raw-output ".director_public_ip" )}
+: ${NETWORK:=$(        echo ${metadata} | jq --raw-output ".virtual_network_name" )}
+: ${SUBNET:=$(         echo ${metadata} | jq --raw-output ".subnetwork" )}
+: ${RESERVED_RANGE:=$( echo ${metadata} | jq --raw-output ".reserved_range" )}
+: ${INTERNAL_CIDR:=$(  echo ${metadata} | jq --raw-output ".internal_cidr" )}
+: ${INTERNAL_GW:=$(    echo ${metadata} | jq --raw-output ".internal_gateway" )}
 
 # outputs
 manifest_dir="$(realpath deployment-manifest)"

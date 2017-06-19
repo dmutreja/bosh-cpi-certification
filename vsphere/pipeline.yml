@@ -221,7 +221,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: master
+      branch: refactor
   - name: bosh-deployment
     type: git
     source:
