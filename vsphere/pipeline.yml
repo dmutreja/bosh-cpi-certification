@@ -14,7 +14,7 @@ shared:
     tags: [vsphere-v6.0]
     file: pipelines/vsphere/tasks/prepare-director.yml
     params: &prepare-director-params
-      BOSH_CLIENT:                          {{BOSH_CLIENT}}
+      BOSH_CLIENT:                          admin
       BOSH_CLIENT_SECRET:                   {{BOSH_CLIENT_SECRET}}
       BOSH_VSPHERE_VCENTER:                 {{VCENTER_IP}}
       BOSH_VSPHERE_VCENTER_USER:            {{VCENTER_USER}}
@@ -36,11 +36,12 @@ shared:
   - &prepare-bats
     task: prepare-bats
     tags: [vsphere-v6.0]
-    file: pipelines/vsphere/tasks/prepare-bats.yml
+    file: pipelines/shared/tasks/prepare-bats.yml
     params: &prepare-bats-params
-      BAT_VCAP_PASSWORD:      {{BAT_VCAP_PASSWORD}}
-      BOSH_CLIENT:            {{BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET:     {{BOSH_CLIENT_SECRET}}
+      BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+      INCLUDE_FILE:       pipelines/vsphere/assets/bats/include.sh
+      BATS_SPEC:          pipelines/vsphere/assets/bats/bats-spec.yml
 
   - &run-bats
     task: run-bats
