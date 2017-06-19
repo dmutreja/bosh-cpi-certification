@@ -19,6 +19,7 @@ shared:
       BOSH_VSPHERE_VCENTER:                 {{VCENTER_IP}}
       BOSH_VSPHERE_VCENTER_USER:            {{VCENTER_USER}}
       BOSH_VSPHERE_VCENTER_PASSWORD:        {{VCENTER_PASSWORD}}
+      BOSH_VSPHERE_VCENTER_RESOURCE_POOL:   {{VCENTER_RESOURCE_POOL}}
       BOSH_VSPHERE_VERSION:                 {{VSPHERE_VERSION}}
       BOSH_VSPHERE_VCENTER_DC:              {{VCENTER_DC}}
       BOSH_VSPHERE_VCENTER_CLUSTER:         {{VCENTER_CLUSTER}}
@@ -270,7 +271,7 @@ resources:
   - name: environment
     type: pool
     source:
-      pool: vsphere-5.1
+      pool: vsphere-6.0
       uri: git@github.com:cloudfoundry/bosh-cpi-environments.git
       branch: master
       private_key: {{github_deployment_key__bosh-cpi-environments}}
