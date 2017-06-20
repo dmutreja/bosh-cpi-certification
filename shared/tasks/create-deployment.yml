@@ -6,8 +6,8 @@ image_resource:
 
 inputs:
   - name: pipelines
+  - name: environment
   - name: director-state
-  - name: deployment-manifest
   - name: stemcell
   - name: bosh-cli
 
@@ -15,5 +15,8 @@ run:
   path: pipelines/shared/tasks/create-deployment.sh
 
 params:
-  DEPLOYMENT_NAME:    ""
-  RELEASE_NAME:       ""
+  BOSH_VSPHERE_VCENTER_VLAN: ""
+  CERTIFICATION_OPS_FILE:    ""
+  DEPLOYMENT_NAME:           certification
+  RELEASE_NAME:              certification
+  STEMCELL_NAME:             ""

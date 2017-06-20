@@ -139,23 +139,15 @@ jobs:
               stemcell:     old-stemcell
               bosh-release: old-bosh-release
               cpi-release:  old-cpi-release
-          - task: prepare-deployment
-            tags: [vsphere-v6.0]
-            file: pipelines/vsphere/tasks/prepare-deployment.yml
-            params:
-              RELEASE_NAME:              certification
-              DEPLOYMENT_NAME:           certification
-              STEMCELL_NAME:             bosh-vsphere-esxi-ubuntu-trusty-go_agent
-              BOSH_VSPHERE_VCENTER_VLAN: {{VCENTER_VLAN}}
-              CERTIFICATION_OPS_FILE:    pipelines/vsphere/assets/certification/ops.yml
           - task: create-deployment
             tags: [vsphere-v6.0]
             file: pipelines/shared/tasks/create-deployment.yml
             input_mapping:
               stemcell:                  old-stemcell
             params:
-              RELEASE_NAME:              certification
-              DEPLOYMENT_NAME:           certification
+              BOSH_VSPHERE_VCENTER_VLAN: {{VCENTER_VLAN}}
+              CERTIFICATION_OPS_FILE:    pipelines/vsphere/assets/certification/ops.yml
+              STEMCELL_NAME:             bosh-vsphere-esxi-ubuntu-trusty-go_agent
           - <<: *prepare-director
           - task: test-upgrade
             tags: [vsphere-v6.0]

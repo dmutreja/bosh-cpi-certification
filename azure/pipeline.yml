@@ -143,20 +143,13 @@ jobs:
               stemcell:     old-stemcell
               bosh-release: old-bosh-release
               cpi-release:  old-cpi-release
-          - task: prepare-deployment
-            file: pipelines/azure/tasks/prepare-deployment.yml
-            params:
-              BOSH_CLIENT_SECRET: {{bosh_client_secret}}
-              RELEASE_NAME:       certification
-              DEPLOYMENT_NAME:    certification
-              STEMCELL_NAME:      bosh-azure-hyperv-ubuntu-trusty-go_agent
           - task: create-deployment
             file: pipelines/shared/tasks/create-deployment.yml
             input_mapping:
               stemcell:        old-stemcell
             params:
-              RELEASE_NAME:    certification
-              DEPLOYMENT_NAME: certification
+              CERTIFICATION_OPS_FILE: pipelines/azure/assets/certification/ops.yml
+              STEMCELL_NAME:          bosh-azure-hyperv-ubuntu-trusty-go_agent
           - <<: *prepare-director
           - task: test-upgrade
             file: pipelines/shared/tasks/test-upgrade.yml
