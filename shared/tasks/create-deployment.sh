@@ -2,16 +2,14 @@
 
 set -e
 
-source pipelines/shared/utils.sh
-
-: ${RELEASE_NAME:?}
 : ${DEPLOYMENT_NAME:?}
+: ${RELEASE_NAME:?}
 
 # inputs
-release_dir="$( cd $(dirname $0) && cd ../.. && pwd )"
-workspace_dir="$( cd ${release_dir} && cd .. && pwd )"
+pipelines_dir="$( cd $(dirname $0) && cd ../.. && pwd )"
+workspace_dir="$( cd ${pipelines_dir} && cd .. && pwd )"
 manifest_dir="${workspace_dir}/deployment-manifest"
-deployment_release="${workspace_dir}/pipelines/shared/assets/certification-release"
+deployment_release"${pipelines_dir}/shared/assets/certification-release"
 director_state_dir="${workspace_dir}/director-state"
 
 stemcell_path=$(realpath stemcell/*.tgz)

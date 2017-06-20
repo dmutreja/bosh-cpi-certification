@@ -1,0 +1,37 @@
+---
+name: ((deployment_name))
+
+releases:
+  - name: ((release_name))
+    version: latest
+
+compilation:
+  reuse_compilation_vms: true
+  workers: 1
+  network: private
+
+update:
+  canaries: 1
+  canary_watch_time: 30000-240000
+  update_watch_time: 30000-600000
+  max_in_flight: 3
+
+resource_pools:
+  - name: default
+    stemcell:
+      name: ((stemcell_name))
+      version: latest
+    network: private
+
+networks:
+  - name: private
+    type: manual
+
+jobs:
+  - name: simple
+    template: simple
+    instances: 1
+    resource_pool: default
+    networks:
+      - name: private
+        default: [dns, gateway]

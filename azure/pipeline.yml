@@ -151,9 +151,9 @@ jobs:
               DEPLOYMENT_NAME:    certification
               STEMCELL_NAME:      bosh-azure-hyperv-ubuntu-trusty-go_agent
           - task: create-deployment
-            file: pipelines/azure/tasks/create-deployment.yml
+            file: pipelines/shared/tasks/create-deployment.yml
             input_mapping:
-              stemcell:                  old-stemcell
+              stemcell:        old-stemcell
             params:
               RELEASE_NAME:    certification
               DEPLOYMENT_NAME: certification

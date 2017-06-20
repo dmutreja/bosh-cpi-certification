@@ -1,0 +1,28 @@
+- type: replace
+  path: /compilation/cloud_properties?
+  value:
+    cpu: 2
+    ram: 1024
+    disk: 10240
+
+- type: replace
+  path: /resource_pools/name=default/cloud_properties?
+  value:
+    cpu: 2
+    ram: 1024
+    disk: 10240
+
+- type: replace
+  path: /networks/name=private/subnets?/-
+  value:
+    range: ((network1.vCenterCIDR))
+    gateway: ((network1.vCenterGateway))
+    reserved: [((network1.reservedRange))]
+    dns: [((DNS))]
+    static: [((network1.staticRange))]
+    cloud_properties:
+      name: ((bosh_vsphere_vcenter_vlan))
+
+- type: replace
+  path: /jobs/name=simple/networks/name=private/static_ips?/-
+  value: ((network1.staticIP-1))

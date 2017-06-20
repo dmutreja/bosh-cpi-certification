@@ -6,14 +6,14 @@ image_resource:
 
 inputs:
   - name: pipelines
-  - name: stemcell
-  - name: deployment-manifest
-  - name: bosh-cli
   - name: director-state
+  - name: deployment-manifest
+  - name: stemcell
+  - name: bosh-cli
 
 run:
-  path: pipelines/azure/tasks/create-deployment.sh
+  path: pipelines/shared/tasks/create-deployment.sh
 
 params:
-  RELEASE_NAME:       ""
   DEPLOYMENT_NAME:    ""
+  RELEASE_NAME:       ""

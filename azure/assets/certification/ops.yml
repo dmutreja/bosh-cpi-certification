@@ -1,0 +1,19 @@
+- type: replace
+  path: /compilation/cloud_properties?
+  value:
+    instance_type: Standard_D1
+
+- type: replace
+  path: /resource_pools/name=default/cloud_properties?
+  value:
+    instance_type: Standard_D1
+
+- type: replace
+  path: /networks/name=private/subnets?/-
+  value:
+    range: ((internal_cidr))
+    gateway: ((internal_gateway))
+    reserved: [((reserved_range))]
+    cloud_properties:
+      virtual_network_name: ((virtual_network_name))
+      subnet_name: ((subnetwork))

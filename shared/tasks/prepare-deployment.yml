@@ -5,9 +5,9 @@ image_resource:
   source: {repository: boshcpi/cpi-certification}
 
 inputs:
-  - name: bosh-cli
   - name: pipelines
   - name: environment
+  - name: bosh-cli
 
 outputs:
   - name: deployment-manifest
@@ -16,9 +16,8 @@ run:
   path: pipelines/vsphere/tasks/prepare-deployment.sh
 
 params:
-  BOSH_CLIENT:               ""
-  BOSH_CLIENT_SECRET:        ""
-  BOSH_VSPHERE_VCENTER_VLAN: ""
+  BOSH_VSPHERE_VCENTER_VLAN: "" # how do we get rid of this
+  CERTIFICATION_OPS_FILE:    ""
   RELEASE_NAME:              ""
   STEMCELL_NAME:             ""
   DEPLOYMENT_NAME:           ""
