@@ -23,7 +23,7 @@ bosh2 int pipelines/shared/assets/certification-release/certification.yml \
   -l environment/metadata > /tmp/deployment.yml
 
 source director-state/director.env
-export BOSH_CA_CERT=director-state/ca_cert.pem
+export BOSH_CA_CERT=$( realpath director-state/ca_cert.pem )
 
 pushd pipelines/shared/assets/certification-release
   time bosh2 -n create-release --force --name ${RELEASE_NAME}
