@@ -30,7 +30,7 @@ fi
 cat > "${output_dir}/director.env" <<EOF
 #!/usr/bin/env bash
 
-export BOSH_ENVIRONMENT="$( director_public_ip ${metadata} )"
+export BOSH_ENVIRONMENT=$( director_public_ip "${metadata}" )
 export BOSH_CLIENT=admin
 export BOSH_CLIENT_SECRET=${BOSH_CLIENT_SECRET}
 EOF
