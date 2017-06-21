@@ -12,22 +12,12 @@ shared:
   - &prepare-director
     task: prepare-director
     tags: [vsphere-v6.0]
-    file: pipelines/vsphere/tasks/prepare-director.yml
+    file: pipelines/shared/tasks/prepare-director.yml
     params: &prepare-director-params
-      BOSH_CLIENT:                          admin
-      BOSH_CLIENT_SECRET:                   {{BOSH_CLIENT_SECRET}}
-      BOSH_VSPHERE_VCENTER:                 {{VCENTER_IP}}
-      BOSH_VSPHERE_VCENTER_USER:            {{VCENTER_USER}}
-      BOSH_VSPHERE_VCENTER_PASSWORD:        {{VCENTER_PASSWORD}}
-      BOSH_VSPHERE_VCENTER_RESOURCE_POOL:   {{VCENTER_RESOURCE_POOL}}
-      BOSH_VSPHERE_VERSION:                 {{VSPHERE_VERSION}}
-      BOSH_VSPHERE_VCENTER_DC:              {{VCENTER_DC}}
-      BOSH_VSPHERE_VCENTER_CLUSTER:         {{VCENTER_CLUSTER}}
-      BOSH_VSPHERE_VCENTER_DATASTORE:       {{VCENTER_DATASTORE}}
-      BOSH_VSPHERE_VCENTER_VLAN:            {{VCENTER_VLAN}}
-      BOSH_VSPHERE_VCENTER_VM_FOLDER:       {{VCENTER_VM_FOLDER}}
-      BOSH_VSPHERE_VCENTER_TEMPLATE_FOLDER: {{VCENTER_TEMPLATE_FOLDER}}
-      BOSH_VSPHERE_VCENTER_DISK_PATH:       {{VCENTER_DISK_PATH}}
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+      INFRASTRUCTURE:     vsphere
+      INCLUDE_FILE:       pipelines/vsphere/assets/bats/include.sh
+      DIRECTOR_VARS_FILE: {{vsphere_director_vars_file}}
 
   - &deploy-director
     task: deploy-director

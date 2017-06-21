@@ -1,0 +1,27 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source: {repository: boshcpi/cpi-certification}
+
+inputs:
+  - name: pipelines
+  - name: environment
+  - name: bosh-deployment
+  - name: bosh-cli
+  - name: bosh-release
+  - name: cpi-release
+  - name: stemcell
+
+outputs:
+  - name: director-config
+
+run:
+  path: pipelines/shared/tasks/prepare-director.sh
+
+params:
+  BOSH_CLIENT_SECRET: ""
+  DIRECTOR_VARS_FILE: ""
+  INFRASTRUCTURE:     ""
+  INCLUDE_FILE:       ""
+  USE_REDIS:          false
