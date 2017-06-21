@@ -40,7 +40,7 @@ ${bosh_cli} int \
   -o ${bosh_deployment}/powerdns.yml \
   -o ${bosh_deployment}/jumpbox-user.yml \
   -o ${pipelines_dir}/shared/assets/ops/custom-releases.yml \
-  -o ${pipelines_dir}/${INFRASTRUCTURE}/assets/ops/custom-releases.yml \
+  -o ${pipelines_dir}/${INFRASTRUCTURE}/assets/ops/custom-cpi-release.yml \
   $( echo ${redis_ops} ) \
   $( echo ${OPTIONAL_OPS_FILE} ) \
   -v bosh_release_uri="file://$(echo bosh-release/*.tgz)" \
