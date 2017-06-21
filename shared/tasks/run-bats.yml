@@ -12,7 +12,7 @@ inputs:
   - name: bosh-cli
 
 run:
-  path: pipelines/shared/tasks/prepare-bats.sh
+  path: pipelines/shared/tasks/run-bats.sh
 
 params:
   BAT_VCAP_PASSWORD:  ""
