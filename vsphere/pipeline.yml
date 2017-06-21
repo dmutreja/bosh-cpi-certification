@@ -16,7 +16,6 @@ shared:
     params: &prepare-director-params
       BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
       INFRASTRUCTURE:     vsphere
-      INCLUDE_FILE:       pipelines/vsphere/assets/bats/include.sh
       DIRECTOR_VARS_FILE: {{vsphere_director_vars_file}}
       OPTIONAL_OPS_FILE:  |
         -o bosh-deployment/vsphere/resource-pool.yml
@@ -31,10 +30,9 @@ shared:
     tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/prepare-bats.yml
     params: &prepare-bats-params
+      INFRASTRUCTURE:     vsphere
       BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
       BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-      INCLUDE_FILE:       pipelines/vsphere/assets/bats/include.sh
-      BATS_SPEC:          pipelines/vsphere/assets/bats/bats-spec.yml
 
   - &run-bats
     task: run-bats
@@ -254,5 +252,5 @@ resources:
     source:
       pool: vsphere-6.0
       uri: git@github.com:cloudfoundry/bosh-cpi-environments.git
-      branch: refactor
+      branch: master
       private_key: {{github_deployment_key__bosh-cpi-environments}}

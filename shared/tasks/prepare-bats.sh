@@ -2,11 +2,10 @@
 
 set -e
 
+: ${INFRASTRUCTURE:?}
 : ${BAT_VCAP_PASSWORD:?}
 : ${BOSH_CLIENT_SECRET:?}
 : ${STEMCELL_NAME:?}
-: ${INCLUDE_FILE:?}
-: ${BATS_SPEC:?}
 
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
@@ -15,7 +14,7 @@ chruby 2.1.7
 function transform_metadata() {
   cat
 }
-source $INCLUDE_FILE
+source pipelines/${INFRASTRUCTURE}/assets/bats/include.sh
 
 # inputs
 pipelines_dir="$( cd $(dirname $0) && cd ../.. && pwd )"
@@ -42,7 +41,7 @@ popd > /dev/null
 
 create_bats_env "${metadata}" "${BAT_VCAP_PASSWORD}" "${BOSH_CLIENT_SECRET}" "${STEMCELL_NAME}" > "${output_dir}/bats.env"
 
-${bosh_cli} interpolate "${BATS_SPEC}" \
+${bosh_cli} interpolate "${pipelines_dir}/${INFRASTRUCTURE}/assets/bats/bats-spec.yml" \
   -v "bosh_uuid=${bosh_uuid}" \
   -v "stemcell_name=${STEMCELL_NAME}" \
   -l "${environment_dir}/metadata" > "${output_dir}/bats-config.yml"

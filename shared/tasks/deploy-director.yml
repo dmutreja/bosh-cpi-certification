@@ -20,5 +20,3 @@ run:
 
 params:
   BOSH_LOG_LEVEL:     info
-  BOSH_CLIENT:        ""
-  BOSH_CLIENT_SECRET: ""

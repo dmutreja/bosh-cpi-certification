@@ -5,10 +5,9 @@ set -e
 : ${BOSH_CLIENT_SECRET:?}
 : ${DIRECTOR_VARS_FILE:?}
 : ${INFRASTRUCTURE:?}
-: ${INCLUDE_FILE:?}
 : ${USE_REDIS:?}
 
-source $INCLUDE_FILE
+source pipelines/${INFRASTRUCTURE}/assets/bats/include.sh
 
 # inputs
 pipelines_dir="$( cd $(dirname $0) && cd ../.. && pwd )"
