@@ -17,9 +17,9 @@
   value:
     range: ((network1.vCenterCIDR))
     gateway: ((network1.vCenterGateway))
-    reserved: [((network1.reservedRange))]
+    reserved: ((network1.reservedRange))
     dns: [((DNS))]
-    static: [((network1.staticRange))]
+    static: ((network1.staticRange))
     cloud_properties:
       name: ((bosh_vsphere_vcenter_vlan))
 

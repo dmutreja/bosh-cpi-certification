@@ -262,5 +262,5 @@ resources:
     source:
       pool: vsphere-6.0
       uri: git@github.com:cloudfoundry/bosh-cpi-environments.git
-      branch: master
+      branch: refactor
       private_key: {{github_deployment_key__bosh-cpi-environments}}

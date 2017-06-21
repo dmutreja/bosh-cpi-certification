@@ -11,7 +11,7 @@ function create_bats_env {
   local bosh_client_secret=${3:?}
   local stemcell_name=${4:?}
 
-  local director_pip=$( director_public_ip ${metadata} )
+  local director_pip=$( echo ${metadata} | jq --raw-output ".directorIP" )
 
 cat <<EOF
 #!/usr/bin/env bash

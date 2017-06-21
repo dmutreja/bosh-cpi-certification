@@ -40,9 +40,9 @@ popd > /dev/null
 
 [[ -f ${director_shared_pem} ]] && cp ${director_shared_pem} "${output_dir}/shared.pem"
 
-create_bats_env "${metadata}" "${BAT_VCAP_PASSWORD}" "${STEMCELL_NAME}" "${BOSH_CLIENT_SECRET}" > "${output_dir}/bats.env"
+create_bats_env "${metadata}" "${BAT_VCAP_PASSWORD}" "${BOSH_CLIENT_SECRET}" "${STEMCELL_NAME}" > "${output_dir}/bats.env"
 
 ${bosh_cli} interpolate "${BATS_SPEC}" \
   -v "bosh_uuid=${bosh_uuid}" \
   -v "stemcell_name=${STEMCELL_NAME}" \
-  -l <( transform_metadata <<< "${metadata}" ) > "${output_dir}/bats-config.yml"
+  -l "${environment_dir}/metadata" > "${output_dir}/bats-config.yml"

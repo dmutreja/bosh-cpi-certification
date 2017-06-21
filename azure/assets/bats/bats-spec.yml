@@ -21,7 +21,7 @@ properties:
     cidr: ((bats_first_network.cidr))
     reserved: [((bats_first_network.reserved_range))]
     static: [((bats_first_network.static_range))]
-    gateway: ((bats_first_network.gateway)
+    gateway: ((bats_first_network.gateway))
   - name: second
     type: manual
     static_ip: ((bats_second_network.static_ip_1))
