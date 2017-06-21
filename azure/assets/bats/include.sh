@@ -2,7 +2,7 @@
 
 function director_public_ip {
   local metadata=${1:?}
-  echo ${metadata} | jq --raw-output ".director_public_ip"
+  echo ${metadata} | jq --raw-output ".external_ip"
 }
 
 function create_bats_env {
@@ -11,7 +11,7 @@ function create_bats_env {
   local bosh_client_secret=${3:?}
   local stemcell_name=${4:?}
 
-  local director_pip=$( echo ${metadata} | jq --raw-output ".director_public_ip" )
+  local director_pip=$( echo ${metadata} | jq --raw-output ".external_ip" )
 
 cat <<EOF
 #!/usr/bin/env bash

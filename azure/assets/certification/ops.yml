@@ -12,8 +12,8 @@
   path: /networks/name=private/subnets?/-
   value:
     range: ((internal_cidr))
-    gateway: ((internal_gateway))
+    gateway: ((internal_gw))
     reserved: [((reserved_range))]
     cloud_properties:
-      virtual_network_name: ((virtual_network_name))
-      subnet_name: ((subnetwork))
+      virtual_network_name: ((vnet_name))
+      subnet_name: ((subnet_name))

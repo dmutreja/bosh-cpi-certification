@@ -11,15 +11,15 @@ groups:
 shared:
   - &prepare-director
     task: prepare-director
-    file: pipelines/azure/tasks/prepare-director.yml
+    file: pipelines/shared/tasks/prepare-director.yml
     params: &prepare-director-params
-      AZURE_CLIENT_ID: {{azure_client_id}}
-      AZURE_CLIENT_SECRET: {{azure_client_secret}}
-      AZURE_SUBSCRIPTION_ID: {{azure_subscription_id}}
-      AZURE_TENANT_ID: {{azure_tenant_id}}
       BOSH_CLIENT_SECRET: {{bosh_client_secret}}
-      AZURE_DNS: {{azure_dns}}
-      AZURE_ENVIRONMENT: {{azure_environment}}
+      INFRASTRUCTURE:     azure
+      INCLUDE_FILE:       pipelines/azure/assets/bats/include.sh
+      DIRECTOR_VARS_FILE: {{azure_director_vars_file}}
+      OPTIONAL_OPS_FILE:  |
+        -o bosh-deployment/azure/custom-environment.yml \
+        -o bosh-deployment/external-ip-with-registry-not-recommended.yml
 
   - &deploy-director
     task: deploy-director

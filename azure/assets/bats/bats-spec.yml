@@ -15,7 +15,7 @@ properties:
     static_ip: ((bats_first_network.static_ip_1))
     cloud_properties:
       resource_group_name: ((resource_group_name))
-      virtual_network_name: ((virtual_network_name))
+      virtual_network_name: ((vnet_name))
       subnet_name: ((bats_first_network.name))
       security_group: ((default_security_group))
     cidr: ((bats_first_network.cidr))
@@ -27,7 +27,7 @@ properties:
     static_ip: ((bats_second_network.static_ip_1))
     cloud_properties:
       resource_group_name: ((resource_group_name))
-      virtual_network_name: ((virtual_network_name))
+      virtual_network_name: ((vnet_name))
       subnet_name: ((bats_second_network.name))
       security_group: ((default_security_group))
     cidr: ((bats_second_network.cidr))

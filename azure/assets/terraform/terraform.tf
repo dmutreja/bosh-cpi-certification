@@ -141,14 +141,17 @@ resource "azurerm_public_ip" "azure_ip_bats" {
   public_ip_address_allocation = "static"
 }
 
-output "director_public_ip" {
+output "external_ip" {
   value = "${azurerm_public_ip.azure_ip_bosh.ip_address}"
 }
-output "virtual_network_name" {
+output "vnet_name" {
   value = "${azurerm_virtual_network.azure_bosh_network.name}"
 }
-output "subnetwork" {
+output "subnet_name" {
   value = "${azurerm_subnet.azure_bosh_subnet.name}"
+}
+output "internal_ip" {
+  value = "${cidrhost(azurerm_subnet.azure_bosh_subnet.address_prefix, 6)}"
 }
 output "resource_group_name" {
   value = "${azurerm_resource_group.azure_rg_bosh.name}"
@@ -162,7 +165,7 @@ output "default_security_group" {
 output "internal_cidr" {
   value = "${azurerm_subnet.azure_bosh_subnet.address_prefix}"
 }
-output "internal_gateway" {
+output "internal_gw" {
   value = "${cidrhost(azurerm_subnet.azure_bosh_subnet.address_prefix, 1)}"
 }
 output "reserved_range" {

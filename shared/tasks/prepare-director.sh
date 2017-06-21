@@ -24,7 +24,7 @@ output_dir="${workspace_dir}/director-config"
 metadata="$( cat ${environment_dir}/metadata )"
 redis_ops=""
 if [ "${USE_REDIS}" == true ]; then
-  redis_ops="--ops-file ${pipelines_dir}/shared/assets/ops/redis.yml"
+  redis_ops="-o ${pipelines_dir}/shared/assets/ops/redis.yml"
 fi
 
 cat > "${output_dir}/director.env" <<EOF
@@ -37,11 +37,12 @@ EOF
 
 ${bosh_cli} int \
   -o ${bosh_deployment}/${INFRASTRUCTURE}/cpi.yml \
-  -o ${bosh_deployment}/${INFRASTRUCTURE}/resource-pool.yml \
   -o ${bosh_deployment}/powerdns.yml \
+  -o ${bosh_deployment}/jumpbox-user.yml \
   -o ${pipelines_dir}/shared/assets/ops/custom-releases.yml \
   -o ${pipelines_dir}/${INFRASTRUCTURE}/assets/ops/custom-releases.yml \
-  $(echo ${redis_ops}) \
+  $( echo ${redis_ops} ) \
+  $( echo ${OPTIONAL_OPS_FILE} ) \
   -v bosh_release_uri="file://$(echo bosh-release/*.tgz)" \
   -v cpi_release_uri="file://$(echo cpi-release/*.tgz)" \
   -v stemcell_uri="file://$(echo stemcell/*.tgz)" \
