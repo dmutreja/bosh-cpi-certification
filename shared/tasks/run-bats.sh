@@ -47,7 +47,8 @@ if [ -f director-state/shared.pem ]; then
   eval $(ssh-agent)
   ssh-add ${ssh_key_path}
 fi
-export BAT_VCAP_PASSWORD=${BAT_VCAP_PASSWORD}
+export BOSH_CLIENT=admin
+export BAT_VCAP_PASSWORD="${BAT_VCAP_PASSWORD}"
 export BAT_DIRECTOR_USER=admin
 export BAT_DIRECTOR_PASSWORD="${BOSH_CLIENT_SECRET}"
 export BAT_STEMCELL=$(realpath stemcell/*.tgz)
