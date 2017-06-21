@@ -8,7 +8,6 @@ set -e
 : ${USE_REDIS:?}
 
 source pipelines/shared/utils.sh
-setup_bosh_cli
 source pipelines/${INFRASTRUCTURE}/assets/bats/include.sh
 
 metadata="$( cat environment/metadata )"

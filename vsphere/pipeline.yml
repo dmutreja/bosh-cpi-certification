@@ -25,19 +25,14 @@ shared:
     tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/deploy-director.yml
 
-  - &prepare-bats
-    task: prepare-bats
-    tags: [vsphere-v6.0]
-    file: pipelines/shared/tasks/prepare-bats.yml
-    params: &prepare-bats-params
-      INFRASTRUCTURE:     vsphere
-      BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-
   - &run-bats
     task: run-bats
     tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/run-bats.yml
+    params: &run-bats-params
+      INFRASTRUCTURE:     vsphere
+      BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
 
   - &teardown
     task: teardown
@@ -63,11 +58,10 @@ jobs:
       - <<: *prepare-director
       - do:
           - <<: *deploy-director
-          - <<: *prepare-bats
-            params:
-              <<: *prepare-bats-params
-              STEMCELL_NAME: bosh-vsphere-esxi-centos-7-go_agent
           - <<: *run-bats
+            params:
+              <<: *run-bats-params
+              STEMCELL_NAME: bosh-vsphere-esxi-centos-7-go_agent
         ensure:
           do:
             - <<: *teardown
@@ -89,11 +83,10 @@ jobs:
       - <<: *prepare-director
       - do:
           - <<: *deploy-director
-          - <<: *prepare-bats
-            params:
-              <<: *prepare-bats-params
-              STEMCELL_NAME: bosh-vsphere-esxi-ubuntu-trusty-go_agent
           - <<: *run-bats
+            params:
+              <<: *run-bats-params
+              STEMCELL_NAME: bosh-vsphere-esxi-ubuntu-trusty-go_agent
         ensure:
           do:
             - <<: *teardown

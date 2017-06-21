@@ -8,7 +8,6 @@ set -e
 : ${STEMCELL_NAME:?}
 
 source pipelines/shared/utils.sh
-setup_bosh_cli
 
 vsphere_vars=""
 if [ -n "${BOSH_VSPHERE_VCENTER_VLAN}" ]; then
@@ -22,7 +21,6 @@ bosh2 int pipelines/shared/assets/certification-release/certification.yml \
   -v "stemcell_name=${STEMCELL_NAME}" \
   $(echo ${vsphere_vars}) \
   -l environment/metadata > /tmp/deployment.yml
-
 
 source director-state/director.env
 export BOSH_CA_CERT=director-state/ca_cert.pem

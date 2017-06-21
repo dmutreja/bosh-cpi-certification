@@ -10,7 +10,6 @@ set -e
 source pipelines/shared/utils.sh
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
-setup_bosh_cli
 # Override this to alter metadata before interpolation
 function transform_metadata() {
   cat

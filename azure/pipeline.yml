@@ -24,17 +24,13 @@ shared:
     task: deploy-director
     file: pipelines/shared/tasks/deploy-director.yml
 
-  - &prepare-bats
-    task: prepare-bats
-    file: pipelines/shared/tasks/prepare-bats.yml
-    params: &prepare-bats-params
-      INFRASTRUCTURE:     azure
-      BOSH_CLIENT_SECRET: {{bosh_client_secret}}
-      BAT_VCAP_PASSWORD:  {{bat_vcap_password}}
-
   - &run-bats
     task: run-bats
     file: pipelines/shared/tasks/run-bats.yml
+    params: &run-bats-params
+      INFRASTRUCTURE:     azure
+      BOSH_CLIENT_SECRET: {{bosh_client_secret}}
+      BAT_VCAP_PASSWORD:  {{bat_vcap_password}}
 
   - &teardown
     task: teardown
@@ -75,11 +71,10 @@ jobs:
       - <<: *prepare-director
       - do:
           - <<: *deploy-director
-          - <<: *prepare-bats
-            params:
-              <<: *prepare-bats-params
-              STEMCELL_NAME: bosh-azure-hyperv-centos-7-go_agent
           - <<: *run-bats
+            params:
+              <<: *run-bats-params
+              STEMCELL_NAME: bosh-azure-hyperv-centos-7-go_agent
         ensure:
           do:
             - <<: *teardown
@@ -101,11 +96,10 @@ jobs:
       - <<: *prepare-director
       - do:
           - <<: *deploy-director
-          - <<: *prepare-bats
-            params:
-              <<: *prepare-bats-params
-              STEMCELL_NAME: bosh-azure-hyperv-ubuntu-trusty-go_agent
           - <<: *run-bats
+            params:
+              <<: *run-bats-params
+              STEMCELL_NAME: bosh-azure-hyperv-ubuntu-trusty-go_agent
         ensure:
           do:
             - <<: *teardown

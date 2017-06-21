@@ -5,7 +5,6 @@ set -e
 source pipelines/shared/utils.sh
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
-setup_bosh_cli
 
 if [ ! -e director-state/director-state.json ]; then
   echo "director-state.json does not exist, skipping..."
