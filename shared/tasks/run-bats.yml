@@ -6,9 +6,15 @@ image_resource:
 
 inputs:
   - name: pipelines
+  - name: environment
   - name: bats
-  - name: bats-config
-  - name: stemcell
+  - name: director-state
+  - name: bosh-cli
 
 run:
-  path: pipelines/shared/tasks/run-bats.sh
+  path: pipelines/shared/tasks/prepare-bats.sh
+
+params:
+  BAT_VCAP_PASSWORD:  ""
+  BOSH_CLIENT_SECRET: ""
+  STEMCELL_NAME:      ""

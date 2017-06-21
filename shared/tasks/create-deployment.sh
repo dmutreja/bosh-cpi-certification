@@ -15,7 +15,7 @@ if [ -n "${BOSH_VSPHERE_VCENTER_VLAN}" ]; then
   vsphere_vars="-v bosh_vsphere_vcenter_vlan=${BOSH_VSPHERE_VCENTER_VLAN}"
 fi
 
-${bosh_cli} interpolate pipelines/shared/assets/certification-release/certification.yml \
+bosh2 int pipelines/shared/assets/certification-release/certification.yml \
   -o "${CERTIFICATION_OPS_FILE}" \
   -v "deployment_name=${DEPLOYMENT_NAME}" \
   -v "release_name=${RELEASE_NAME}" \
