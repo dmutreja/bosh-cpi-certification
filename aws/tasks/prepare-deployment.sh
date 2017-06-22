@@ -19,10 +19,6 @@ export AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY}
 export AWS_SECRET_ACCESS_KEY=${AWS_SECRET_KEY}
 export AWS_DEFAULT_REGION=${AWS_REGION_NAME}
 
-# inputs
-bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
-chmod +x $bosh_cli
-
 # configuration
 : ${DIRECTOR_IP:=$(          stack_info "DirectorEIP" )}
 : ${AVAILABILITY_ZONE:=$(    stack_info "AvailabilityZone" )}

@@ -23,8 +23,6 @@ STEMCELL_URI="file://$(echo stemcell/*.tgz)"
 output_dir="$(realpath director-config)"
 
 bosh_deployment=$(realpath bosh-deployment)
-bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
-chmod +x $bosh_cli
 
 source pipelines/shared/utils.sh
 source pipelines/aws/utils.sh
@@ -81,7 +79,7 @@ redis_password: redis-password
 dns_recursor_ip: 10.0.0.2
 EOF
 
-${bosh_cli} interpolate \
+bosh2 interpolate \
   --ops-file ${bosh_deployment}/aws/cpi.yml \
   --ops-file ${bosh_deployment}/powerdns.yml \
   --ops-file pipelines/shared/assets/ops/custom-releases.yml \

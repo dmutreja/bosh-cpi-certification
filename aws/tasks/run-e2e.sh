@@ -2,6 +2,7 @@
 
 set -e
 
+source pipelines/shared/utils.sh
 source pipelines/aws/utils.sh
 
 : ${AWS_ACCESS_KEY:?}
@@ -22,8 +23,6 @@ stemcell_path="$(realpath stemcell/*.tgz)"
 heavy_stemcell_path="$(realpath heavy-stemcell/*.tgz)"
 e2e_release="$(realpath pipelines/aws/assets/e2e-test-release)"
 director_state=$(realpath director-state)
-bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
-chmod +x $bosh_cli
 
 : ${SUBNET_ID:=$(            stack_info "PublicSubnetID")}
 : ${AVAILABILITY_ZONE:=$(    stack_info "AvailabilityZone")}
@@ -41,12 +40,12 @@ e2e_release_version=1.0.0
 e2e_release_home="$HOME/${e2e_release##*/}"
 cp -r ${e2e_release} ${e2e_release_home}
 pushd ${e2e_release_home}
-  time $bosh_cli -n create-release --force --name ${e2e_deployment_name} --version ${e2e_release_version}
-  time $bosh_cli -n upload-release
+  time bosh2 -n create-release --force --name ${e2e_deployment_name} --version ${e2e_release_version}
+  time bosh2 -n upload-release
 popd
 
-time $bosh_cli -n upload-stemcell "${stemcell_path}"
-time $bosh_cli -n upload-stemcell "${heavy_stemcell_path}"
+time bosh2 -n upload-stemcell "${stemcell_path}"
+time bosh2 -n upload-stemcell "${heavy_stemcell_path}"
 
 e2e_manifest_filename=e2e-manifest.yml
 e2e_cloud_config_filename=e2e-cloud-config.yml
@@ -177,21 +176,21 @@ instance_groups:
         default: [dns, gateway]
 EOF
 
-time $bosh_cli -n update-cloud-config "${e2e_cloud_config_filename}"
+time bosh2 -n update-cloud-config "${e2e_cloud_config_filename}"
 
-time $bosh_cli -n deploy -d ${e2e_deployment_name} "${e2e_manifest_filename}"
+time bosh2 -n deploy -d ${e2e_deployment_name} "${e2e_manifest_filename}"
 
-time $bosh_cli -n run-errand -d ${e2e_deployment_name} iam-instance-profile-test
+time bosh2 -n run-errand -d ${e2e_deployment_name} iam-instance-profile-test
 
-time $bosh_cli -n run-errand -d ${e2e_deployment_name} raw-ephemeral-disk-test
+time bosh2 -n run-errand -d ${e2e_deployment_name} raw-ephemeral-disk-test
 
-time $bosh_cli -n run-errand -d ${e2e_deployment_name} elb-registration-test
+time bosh2 -n run-errand -d ${e2e_deployment_name} elb-registration-test
 
-time $bosh_cli -n run-errand -d ${e2e_deployment_name} heavy-stemcell-test
+time bosh2 -n run-errand -d ${e2e_deployment_name} heavy-stemcell-test
 
 # spot instances do not work in China
 if [ "${AWS_REGION_NAME}" != "cn-north-1" ]; then
-  time $bosh_cli -n run-errand -d ${e2e_deployment_name} spot-instance-test
+  time bosh2 -n run-errand -d ${e2e_deployment_name} spot-instance-test
 else
   echo "Skipping spot instance tests for ${AWS_REGION_NAME}..."
 fi

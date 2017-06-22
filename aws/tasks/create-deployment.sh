@@ -23,8 +23,6 @@ manifest_dir=$(realpath deployment-manifest)
 director_state=$(realpath director-state)
 deployment_release=$(realpath pipelines/shared/assets/certification-release)
 stemcell_dir=$(realpath stemcell)
-bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
-chmod +x $bosh_cli
 
 # configuration
 : ${DIRECTOR_IP:=$( stack_info "DirectorEIP" )}
@@ -33,9 +31,9 @@ export BOSH_CA_CERT="${director_state}/ca_cert.pem"
 export BOSH_ENVIRONMENT="${DIRECTOR_IP}"
 
 pushd ${deployment_release}
-  time $bosh_cli -n create-release --force --name ${RELEASE_NAME}
-  time $bosh_cli -n upload-release
+  time bosh2 -n create-release --force --name ${RELEASE_NAME}
+  time bosh2 -n upload-release
 popd
 
-time $bosh_cli -n upload-stemcell ${stemcell_dir}/*.tgz
-time $bosh_cli -n deploy -d ${DEPLOYMENT_NAME} ${manifest_dir}/deployment.yml
+time bosh2 -n upload-stemcell ${stemcell_dir}/*.tgz
+time bosh2 -n deploy -d ${DEPLOYMENT_NAME} ${manifest_dir}/deployment.yml
