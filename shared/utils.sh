@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Oportunistically configure bosh2 for use
-local bosh_src="$(realpath bosh-cli/*bosh-cli-* 2>/dev/null)"
+bosh_src="$(realpath bosh-cli/*bosh-cli-* 2>/dev/null)"
 if [[ $? -eq 0 ]]; then
   export bosh_cli="/usr/local/bin/bosh2"
   mv "${bosh_src}" "${bosh_cli}"
