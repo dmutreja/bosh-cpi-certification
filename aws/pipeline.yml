@@ -31,23 +31,23 @@ shared:
       BOSH_CLIENT: {{BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
 
-  - &prepare-manual-bats
-    task: prepare-manual-bats
-    file: pipelines/aws/tasks/prepare-manual-bats.yml
-    params: &prepare-manual-bats-params
-      AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-      AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-      AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-      BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
-      PUBLIC_KEY_NAME:    {{PUBLIC_KEY_NAME}}
-      BOSH_CLIENT:        {{BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-      STEMCELL_NAME:      ""
-      AWS_STACK_NAME:     ""
+  - &prepare-environment
+    task: prepare-environment
+    file: pipelines/aws/tasks/prepare-environment.yml
+    params: &prepare-environment-params
+      AWS_ACCESS_KEY_ID:     {{AWS_ACCESS_KEY}}
+      AWS_SECRET_ACCESS_KEY: {{AWS_SECRET_KEY}}
+      AWS_DEFAULT_REGION:    {{AWS_REGION_NAME}}
+      PUBLIC_KEY_NAME:       {{PUBLIC_KEY_NAME}}
+      AWS_STACK_NAME:        ""
 
   - &run-bats
     task: run-bats
     file: pipelines/shared/tasks/run-bats.yml
+    params: &run-bats-params
+      INFRASTRUCTURE:     aws
+      BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
+      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
 
   - &run-e2e
     task: run-e2e
@@ -132,12 +132,14 @@ jobs:
           AWS_STACK_NAME: centos-manual-bats
       - do:
           - <<: *deploy-director
-          - <<: *prepare-manual-bats
+          - <<: *prepare-environment
             params:
-              <<: *prepare-manual-bats-params
-              STEMCELL_NAME:  *centos-stemcell
+              <<: *prepare-environment-params
               AWS_STACK_NAME: centos-manual-bats
           - <<: *run-bats
+            params:
+              <<: *run-bats-params
+              STEMCELL_NAME: *centos-stemcell
         ensure:
           <<: *teardown
 
@@ -163,12 +165,14 @@ jobs:
           AWS_STACK_NAME: ubuntu-manual-bats
       - do:
           - <<: *deploy-director
-          - <<: *prepare-manual-bats
+          - <<: *prepare-environment
             params:
-              <<: *prepare-manual-bats-params
-              STEMCELL_NAME:  *ubuntu-stemcell
+              <<: *prepare-environment-params
               AWS_STACK_NAME: ubuntu-manual-bats
           - <<: *run-bats
+            params:
+              <<: *run-bats-params
+              STEMCELL_NAME: *ubuntu-stemcell
         ensure:
           <<: *teardown
 
