@@ -1,7 +1,7 @@
 ---
 cpi: aws
 properties:
-  vip: ((bats_eip))
+  vip: ((deployment_eip))
   second_static_ip: ((network_static_ip_2))
   uuid: ((bosh_uuid))
   pool_size: 1

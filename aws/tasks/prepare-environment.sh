@@ -14,7 +14,7 @@ source pipelines/aws/utils.sh
 cat > environment/metadata <<EOF
 security_group_name: $(    aws ec2 describe-security-groups --group-ids $(stack_info "SecurityGroupID") | jq -r '.SecurityGroups[] .GroupName' )
 director_eip: $(           stack_info "DirectorEIP" )
-bats_eip: $(               stack_info "DeploymentEIP" )
+deployment_eip: $(         stack_info "DeploymentEIP" )
 subnet_id: $(              stack_info "PublicSubnetID" )
 availability_zone: $(      stack_info "AvailabilityZone" )
 network_cidr: $(           stack_info "PublicCIDR" )
