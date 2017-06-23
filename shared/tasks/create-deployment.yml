@@ -16,7 +16,7 @@ run:
 
 params:
   BOSH_VSPHERE_VCENTER_VLAN: ""
-  CERTIFICATION_OPS_FILE:    ""
+  INFRASTRUCTURE:            ""
   DEPLOYMENT_NAME:           certification
   RELEASE_NAME:              certification
   STEMCELL_NAME:             ""

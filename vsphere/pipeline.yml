@@ -129,7 +129,7 @@ jobs:
               stemcell:                  old-stemcell
             params:
               BOSH_VSPHERE_VCENTER_VLAN: {{VCENTER_VLAN}}
-              CERTIFICATION_OPS_FILE:    pipelines/vsphere/assets/certification/ops.yml
+              INFRASTRUCTURE:            vsphere
               STEMCELL_NAME:             bosh-vsphere-esxi-ubuntu-trusty-go_agent
           - <<: *prepare-director
           - task: test-upgrade

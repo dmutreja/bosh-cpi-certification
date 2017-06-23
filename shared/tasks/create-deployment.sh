@@ -15,7 +15,7 @@ if [ -n "${BOSH_VSPHERE_VCENTER_VLAN}" ]; then
 fi
 
 bosh2 int pipelines/shared/assets/certification-release/certification.yml \
-  -o "${CERTIFICATION_OPS_FILE}" \
+  -o pipelines/${INFRASTRUCTURE}/assets/certification/ops.yml \
   -v "deployment_name=${DEPLOYMENT_NAME}" \
   -v "release_name=${RELEASE_NAME}" \
   -v "stemcell_name=${STEMCELL_NAME}" \

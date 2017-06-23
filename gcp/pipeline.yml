@@ -17,7 +17,7 @@ shared:
       INFRASTRUCTURE:     gcp
       DIRECTOR_VARS_FILE: {{gcp_director_vars_file}}
       OPTIONAL_OPS_FILE: |
-        -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+        -o bosh-deployment/external-ip-not-recommended.yml
 
   - &deploy-director
     task: deploy-director
@@ -61,7 +61,7 @@ jobs:
         - {get: bosh-release,    trigger: true}
         - {get: cpi-release,     trigger: true}
         - {get: stemcell,        trigger: true, resource: centos-stemcell}
-        - {get: after-midnight,  trigger: true}
+        #- {get: after-midnight,  trigger: true}
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
         - {get: bats,            trigger: false}
@@ -86,7 +86,7 @@ jobs:
         - {get: bosh-release,    trigger: true}
         - {get: cpi-release,     trigger: true}
         - {get: stemcell,        trigger: true, resource: ubuntu-stemcell}
-        - {get: after-midnight,  trigger: true}
+        #- {get: after-midnight,  trigger: true}
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
         - {get: bats,            trigger: false}
@@ -111,11 +111,11 @@ jobs:
         - {get: bosh-release,     trigger: true}
         - {get: cpi-release,      trigger: true}
         - {get: stemcell,         trigger: true, resource: ubuntu-stemcell}
-        - {get: after-midnight,   trigger: true}
+        #- {get: after-midnight,   trigger: true}
         - {get: pipelines,        trigger: false}
         - {get: bosh-cli,         trigger: false}
         - {get: centos-stemcell,  trigger: false} # pass-through
-        - {get: old-stemcell,     trigger: false, version: {version: "3312.7"}}
+        - {get: old-stemcell,     trigger: false, version: {version: "3421"}}
         - {get: old-bosh-release, trigger: false, version: {version: "255.4"}, resource: bosh-release}
         - {get: old-cpi-release,  trigger: false, version: {version: "25.6.2"},  resource: cpi-release}
         - {get: bosh-deployment,  trigger: false}
@@ -139,8 +139,8 @@ jobs:
             input_mapping:
               stemcell:        old-stemcell
             params:
-              CERTIFICATION_OPS_FILE: pipelines/gcp/assets/certification/ops.yml
-              STEMCELL_NAME:          bbosh-google-kvm-ubuntu-trusty-go_agent
+              INFRASTRUCTURE: gcp
+              STEMCELL_NAME:  bbosh-google-kvm-ubuntu-trusty-go_agent
           - <<: *prepare-director
           - task: test-upgrade
             file: pipelines/shared/tasks/test-upgrade.yml
@@ -194,11 +194,11 @@ resource_types:
     repository: ljfranklin/terraform-resource
 
 resources:
-  - name: after-midnight
-    type: time
-    source:
-      start: 12:00 AM -0700
-      stop: 2:00 AM -0700
+#  - name: after-midnight
+#    type: time
+#    source:
+#      start: 12:00 AM -0700
+#      stop: 2:00 AM -0700
   - name: pipelines
     type: git
     source:
@@ -223,15 +223,16 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: gcp-certification
+      branch: gcp-certification-2
   - name: receipt
     type: s3
     source:
-      access_key_id: {{certification__bucket_access_key}}
+      access_key_id:     {{certification__bucket_access_key}}
       secret_access_key: {{certification__bucket_secret_key}}
-      bucket: {{certification__bucket}}
-      regexp: .*-(\d+)-receipt\.json
-      region_name: {{certification__bucket_region}}
+      bucket:            {{certification__bucket}}
+      regexp:            .*-(\d+)-receipt\.json
+      region_name:       {{certification__bucket_region}}
+      endpoint:          {{certification__endpoint}}
   - name: cpi-release
     type: bosh-io-release
     source:
@@ -252,11 +253,12 @@ resources:
     type: terraform_type
     source:
       storage:
-        access_key_id: {{terraform_bucket_access_key_id}}
+        access_key_id:     {{terraform_bucket_access_key_id}}
         secret_access_key: {{terraform_bucket_secret_access_key}}
-        bucket: {{terraform_bucket}}
-        region_name: {{terraform_bucket_region}}
-        bucket_path: {{terraform_bucket_path}}
+        bucket:            {{terraform_bucket}}
+        region_name:       {{terraform_bucket_region}}
+        bucket_path:       {{terraform_bucket_path}}
+        endpoint:          {{terraform_bucket_endpoint}}
       vars:
         google_project:       {{google_project_id}}
         google_region:        {{google_region}}
