@@ -230,8 +230,8 @@ resources:
       access_key_id: {{certification__bucket_access_key}}
       secret_access_key: {{certification__bucket_secret_key}}
       bucket: {{certification__bucket}}
+      endpoint: {{certification__endpoint}}
       regexp: .*-(\d+)-receipt\.json
-      region_name: {{certification__bucket_region}}
   - name: cpi-release
     type: bosh-io-release
     source:
@@ -255,7 +255,7 @@ resources:
         access_key_id: {{terraform_bucket_access_key_id}}
         secret_access_key: {{terraform_bucket_secret_access_key}}
         bucket: {{terraform_bucket}}
-        region_name: {{terraform_bucket_region}}
+        endpoint: {{terraform_bucket_endpoint}}
         bucket_path: {{terraform_bucket_path}}
       vars:
         google_project:       {{google_project_id}}
