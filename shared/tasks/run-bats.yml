@@ -16,7 +16,5 @@ run:
   path: pipelines/shared/tasks/run-bats.sh
 
 params:
-  BAT_VCAP_PASSWORD:  ""
-  BOSH_CLIENT_SECRET: ""
   INFRASTRUCTURE:     ""
   STEMCELL_NAME:      ""

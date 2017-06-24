@@ -10,3 +10,6 @@ configure_bosh_cli() {
   fi
 }
 configure_bosh_cli
+
+state_path() { bosh2 int director-state/director.yml --path="$1" ; }
+creds_path() { bosh2 int director-state/creds.yml --path="$1" ; }

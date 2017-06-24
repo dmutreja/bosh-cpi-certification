@@ -3,8 +3,6 @@
 set -e
 
 : ${INFRASTRUCTURE:?}
-: ${BAT_VCAP_PASSWORD:?}
-: ${BOSH_CLIENT_SECRET:?}
 : ${STEMCELL_NAME:?}
 
 source pipelines/shared/utils.sh
@@ -18,13 +16,6 @@ source pipelines/${INFRASTRUCTURE}/assets/bats/include.sh
 
 metadata="$( cat environment/metadata )"
 
-pushd bats > /dev/null
-  ./write_gemfile
-  bundle install
-  bundle exec bosh -n target $( director_public_ip "${metadata}" )
-  bosh_uuid="$(bundle exec bosh status --uuid)"
-popd > /dev/null
-
 mkdir bats-config
 create_bats_env "${metadata}" "${BAT_VCAP_PASSWORD}" "${BOSH_CLIENT_SECRET}" "${STEMCELL_NAME}" > bats-config/bats.env
 
@@ -33,30 +24,28 @@ bosh2 int pipelines/${INFRASTRUCTURE}/assets/bats/bats-spec.yml \
   -v "stemcell_name=${STEMCELL_NAME}" \
   -l environment/metadata > bats-config/bats-config.yml
 
-mkdir -p $HOME/.ssh
-cat > $HOME/.ssh/config << EOF
-Host *
-    StrictHostKeyChecking no
-EOF
+export BOSH_ENVIRONMENT="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
+export BOSH_CLIENT="admin"
+export BOSH_CLIENT_SECRET="$( creds_path /admin_password )"
+export BOSH_CA_CERT="$( creds_path /director_ssl/ca )"
+export BOSH_GW_HOST="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
+export BOSH_GW_USER="jumpbox"
 
-if [ -f director-state/shared.pem ]; then
-  cp director-state/shared.pem bats-config/shared.pem
-  export BAT_VCAP_PRIVATE_KEY="bats-config/shared.pem"
-  ssh_key_path="$(realpath ${BAT_VCAP_PRIVATE_KEY})"
-  chmod go-r ${ssh_key_path}
-  eval $(ssh-agent)
-  ssh-add ${ssh_key_path}
-fi
-export BOSH_CLIENT=admin
-export BAT_VCAP_PASSWORD="${BAT_VCAP_PASSWORD}"
-export BAT_DIRECTOR_USER=admin
-export BAT_DIRECTOR_PASSWORD="${BOSH_CLIENT_SECRET}"
+export BAT_PRIVATE_KEY="$( creds_path /jumpbox_ssh/private_key )"
+export BAT_DNS_HOST="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
 export BAT_STEMCELL=$(realpath stemcell/*.tgz)
 export BAT_DEPLOYMENT_SPEC=$(realpath bats-config/bats-config.yml)
+export BAT_BOSH_CLI=$(realpath bosh-cli/*bosh-cli-*)
+
+ssh_key_path=/tmp/bat_private_key
+echo "$BAT_PRIVATE_KEY" > $ssh_key_path
+chmod 600 $ssh_key_path
+export BOSH_GW_PRIVATE_KEY=$ssh_key_path
+
+# source specific IaaS specific BATs environment variables
 source bats-config/bats.env
 
 pushd bats
-  ./write_gemfile
   bundle install
-  bundle exec rspec spec ${BAT_RSPEC_FLAGS}
+  bundle exec rspec spec $BAT_RSPEC_FLAGS
 popd

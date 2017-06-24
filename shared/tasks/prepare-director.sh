@@ -2,7 +2,6 @@
 
 set -e
 
-: ${BOSH_CLIENT_SECRET:?}
 : ${DIRECTOR_VARS_FILE:?}
 : ${INFRASTRUCTURE:?}
 : ${USE_REDIS:?}
@@ -15,14 +14,6 @@ redis_ops=""
 if [ "${USE_REDIS}" == true ]; then
   redis_ops="-o pipelines/shared/assets/ops/redis.yml"
 fi
-
-cat > director-config/director.env <<EOF
-#!/usr/bin/env bash
-
-export BOSH_ENVIRONMENT=$( director_public_ip "${metadata}" )
-export BOSH_CLIENT=admin
-export BOSH_CLIENT_SECRET=${BOSH_CLIENT_SECRET}
-EOF
 
 bosh2 int \
   -o bosh-deployment/${INFRASTRUCTURE}/cpi.yml \

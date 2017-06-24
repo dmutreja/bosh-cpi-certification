@@ -11,8 +11,7 @@ function create_bats_env {
 
 cat <<EOF
 #!/usr/bin/env bash
-export BAT_DIRECTOR=${director_external_ip}
-export BAT_DNS_HOST=${director_external_ip}
+
 export BAT_INFRASTRUCTURE=gcp
 export BAT_NETWORKING=dynamic
 export BAT_RSPEC_FLAGS="--tag ~multiple_manual_networks --tag ~raw_ephemeral_storage --tag ~changing_static_ip"

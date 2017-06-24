@@ -13,7 +13,6 @@ shared:
     task: prepare-director
     file: pipelines/shared/tasks/prepare-director.yml
     params: &prepare-director-params
-      BOSH_CLIENT_SECRET: {{bosh_client_secret}}
       INFRASTRUCTURE:     gcp
       DIRECTOR_VARS_FILE: {{gcp_director_vars_file}}
       OPTIONAL_OPS_FILE: |
@@ -28,8 +27,6 @@ shared:
     file: pipelines/shared/tasks/run-bats.yml
     params: &run-bats-params
       INFRASTRUCTURE:     gcp
-      BOSH_CLIENT_SECRET: {{bosh_client_secret}}
-      BAT_VCAP_PASSWORD:  {{bat_vcap_password}}
 
   - &teardown
     task: teardown
@@ -99,10 +96,10 @@ jobs:
             params:
               <<: *run-bats-params
               STEMCELL_NAME: bosh-google-kvm-ubuntu-trusty-go_agent
-        ensure:
-          do:
-            - <<: *teardown
-            - <<: *destroy-environment
+        # ensure:
+        #   do:
+        #     - <<: *teardown
+        #     - <<: *destroy-environment
 
   - name: test-upgrade
     serial: true

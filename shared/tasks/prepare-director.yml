@@ -20,9 +20,7 @@ run:
   path: pipelines/shared/tasks/prepare-director.sh
 
 params:
-  BOSH_CLIENT_SECRET: ""
   DIRECTOR_VARS_FILE: ""
   INFRASTRUCTURE:     ""
-  INCLUDE_FILE:       ""
   OPTIONAL_OPS_FILE:  ""
   USE_REDIS:          false
