@@ -16,11 +16,10 @@ source pipelines/${INFRASTRUCTURE}/assets/bats/include.sh
 
 metadata="$( cat environment/metadata )"
 
-mkdir bats-config
+mkdir -p bats-config
 create_bats_env "${metadata}" "${BAT_VCAP_PASSWORD}" "${BOSH_CLIENT_SECRET}" "${STEMCELL_NAME}" > bats-config/bats.env
 
 bosh2 int pipelines/${INFRASTRUCTURE}/assets/bats/bats-spec.yml \
-  -v "bosh_uuid=${bosh_uuid}" \
   -v "stemcell_name=${STEMCELL_NAME}" \
   -l environment/metadata > bats-config/bats-config.yml
 
