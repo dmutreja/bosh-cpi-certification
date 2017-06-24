@@ -1,11 +1,13 @@
 - type: replace
   path: /compilation/cloud_properties?
   value:
+    zone: ((zone))
     instance_type: n1-standard-2
 
 - type: replace
   path: /resource_pools/name=default/cloud_properties?
   value:
+    zone: ((zone))
     instance_type: n1-standard-2
 
 - type: replace
