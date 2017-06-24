@@ -27,6 +27,9 @@ shared:
     file: pipelines/shared/tasks/run-bats.yml
     params: &run-bats-params
       INFRASTRUCTURE:     gcp
+      BAT_INFRASTRUCTURE: gcp
+      BAT_NETWORKING:     dynamic
+      BAT_RSPEC_FLAGS:    "--tag ~multiple_manual_networks --tag ~raw_ephemeral_storage --tag ~changing_static_ip"
 
   - &teardown
     task: teardown
@@ -220,7 +223,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: gcp-certification-2
+      branch: gcp-certification
   - name: receipt
     type: s3
     source:
