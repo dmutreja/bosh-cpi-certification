@@ -2,40 +2,27 @@
 
 set -e
 
+source pipelines/shared/utils.sh
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
 
 : ${DEPLOYMENT_NAME:?}
 
-# inputs
-old_director_state=$(realpath old-director-state/)
-new_director_config=$(realpath new-director-config/)
-stemcell_dir=$(realpath stemcell/)
-bosh_dir=$(realpath bosh-release/)
-cpi_dir=$(realpath cpi-release/)
-bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
-chmod +x $bosh_cli
-
 # outputs
 output_dir=$(realpath new-director-state/)
 
-source ${new_director_config}/director.env
-: ${BOSH_ENVIRONMENT:?}
-: ${BOSH_CLIENT:?}
-: ${BOSH_CLIENT_SECRET:?}
-export BOSH_CA_CERT="${old_director_state}/ca_cert.pem"
-
-cp -r ${new_director_config}/* ${output_dir}
-cp -r ${old_director_state}/*-state.json ${output_dir}
-cp ${old_director_state}/creds.yml ${output_dir}
-cp ${old_director_state}/ca_cert.pem ${output_dir}
+cp -r new-director-config/director.yml ${output_dir}
+cp -r old-director-state/*-state.json ${output_dir}
+cp old-director-state/creds.yml ${output_dir}
+cp old-director-state/director.env ${output_dir}
+source old-director-state/director.env
 
 # deployment manifest references releases and stemcells relative to itself...make it true
 # these resources are also used in the teardown step
 mkdir -p ${output_dir}/{stemcell,bosh-release,cpi-release}
-cp ${stemcell_dir}/*.tgz ${output_dir}/stemcell/
-cp ${bosh_dir}/*.tgz ${output_dir}/bosh-release/
-cp ${cpi_dir}/*.tgz ${output_dir}/cpi-release/
+cp stemcell/*.tgz ${output_dir}/stemcell/
+cp bosh-release/*.tgz ${output_dir}/bosh-release/
+cp cpi-release/*.tgz ${output_dir}/cpi-release/
 
 function finish {
   echo "Final state of director deployment:"
@@ -49,10 +36,10 @@ trap finish EXIT
 
 echo "upgrading existing BOSH Director VM..."
 pushd ${output_dir} > /dev/null
-  time ${bosh_cli} create-env --state "${output_dir}/director-state.json" \
+  time bosh2 create-env --state "${output_dir}/director-state.json" \
     --vars-store "${output_dir}/creds.yml" -v director_name=bosh \
     director.yml
 popd > /dev/null
 
 echo "recreating existing BOSH Deployment..."
-time $bosh_cli -n -d ${DEPLOYMENT_NAME} recreate
+time bosh2 -n -d ${DEPLOYMENT_NAME} recreate

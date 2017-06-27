@@ -155,14 +155,12 @@ jobs:
         - {get: cpi-release,  tags: [vsphere-v6.0], trigger: true, passed: [bats-centos]}
         - {get: stemcell,     tags: [vsphere-v6.0], trigger: true, passed: [bats-centos, test-upgrade], resource: centos-stemcell}
         - {get: pipelines,    tags: [vsphere-v6.0], trigger: false}
-
       - task: generate
         file: pipelines/shared/tasks/generate-receipt.yml
         tags: [vsphere-v6.0]
         params:
           CPI_RELEASE_NAME: bosh-vsphere-cpi
           STEMCELL_NAME:    bosh-vsphere-esxi-centos-7-go_agent
-
       - {put: receipt, tags: [vsphere-v6.0], params: {file: certification/*-receipt.json}}
 
   - name: certify-ubuntu
@@ -173,14 +171,12 @@ jobs:
         - {get: cpi-release,  tags: [vsphere-v6.0], trigger: true, passed: [bats-ubuntu]}
         - {get: stemcell,     tags: [vsphere-v6.0], trigger: true, passed: [bats-ubuntu, test-upgrade], resource: ubuntu-stemcell}
         - {get: pipelines,    tags: [vsphere-v6.0], trigger: false}
-
       - task: generate
         file: pipelines/shared/tasks/generate-receipt.yml
         tags: [vsphere-v6.0]
         params:
           CPI_RELEASE_NAME: bosh-vsphere-cpi
           STEMCELL_NAME:    bosh-vsphere-esxi-ubuntu-trusty-go_agent
-
       - {put: receipt, tags: [vsphere-v6.0], params: {file: certification/*-receipt.json}}
 
 resources:

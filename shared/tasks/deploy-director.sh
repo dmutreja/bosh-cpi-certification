@@ -40,7 +40,7 @@ pushd ${output_dir} > /dev/null
   echo "deploying BOSH..."
 
   set +e
-  BOSH_LOG_PATH=$logfile BOSH_LOG_LEVEL=DEBUG bosh2 create-env \
+  BOSH_LOG_PATH=$logfile bosh2 create-env \
     --vars-store "${output_dir}/creds.yml" \
     director.yml
   bosh_cli_exit_code="$?"
@@ -53,14 +53,11 @@ pushd ${output_dir} > /dev/null
   fi
 popd > /dev/null
 
-creds_path /director_ssl/ca > "${output_dir}/ca_cert.pem"
-creds_path /director_ssl/certificate >> "${output_dir}/ca_cert.pem"
-
 cat > "${output_dir}/director.env" <<EOF
 export BOSH_ENVIRONMENT="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
 export BOSH_CLIENT="admin"
 export BOSH_CLIENT_SECRET="$( creds_path /admin_password )"
-export BOSH_CA_CERT=director-state/ca_cert.pem
+export BOSH_CA_CERT="$( creds_path /director_ssl/ca )"
 export BOSH_GW_HOST="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
 export BOSH_GW_USER="jumpbox"
 EOF

@@ -30,7 +30,6 @@ shared:
       INFRASTRUCTURE:     azure
       BAT_INFRASTRUCTURE: azure
       BAT_NETWORKING:     manual
-      BAT_RSPEC_FLAGS:    "--tag ~vip_networking --tag ~dynamic_networking --tag ~root_partition --tag ~raw_ephemeral_storage"
 
   - &teardown
     task: teardown

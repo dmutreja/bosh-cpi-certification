@@ -29,13 +29,10 @@ shared:
       INFRASTRUCTURE:     gcp
       BAT_INFRASTRUCTURE: gcp
       BAT_NETWORKING:     dynamic
-      BAT_RSPEC_FLAGS:    "--tag ~multiple_manual_networks --tag ~raw_ephemeral_storage --tag ~changing_static_ip"
 
   - &teardown
     task: teardown
     file: pipelines/shared/tasks/teardown.yml
-    params:
-      DEPLOYMENT_NAME: certification
 
   - &create-environment
     put: environment
@@ -61,7 +58,7 @@ jobs:
         - {get: bosh-release,    trigger: true}
         - {get: cpi-release,     trigger: true}
         - {get: stemcell,        trigger: true, resource: centos-stemcell}
-        #- {get: after-midnight,  trigger: true}
+        - {get: after-midnight,  trigger: true}
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
         - {get: bats,            trigger: false}
@@ -73,7 +70,8 @@ jobs:
           - <<: *run-bats
             params:
               <<: *run-bats-params
-              STEMCELL_NAME: bosh-google-kvm-centos-7-go_agent
+              STEMCELL_NAME:   bosh-google-kvm-centos-7-go_agent
+              BAT_RSPEC_FLAGS: "--tag ~root_partition --tag ~multiple_manual_networks --tag ~raw_ephemeral_storage --tag ~changing_static_ip"
         ensure:
           do:
             - <<: *teardown
@@ -86,7 +84,7 @@ jobs:
         - {get: bosh-release,    trigger: true}
         - {get: cpi-release,     trigger: true}
         - {get: stemcell,        trigger: true, resource: ubuntu-stemcell}
-        #- {get: after-midnight,  trigger: true}
+        - {get: after-midnight,  trigger: true}
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
         - {get: bats,            trigger: false}
@@ -98,7 +96,8 @@ jobs:
           - <<: *run-bats
             params:
               <<: *run-bats-params
-              STEMCELL_NAME: bosh-google-kvm-ubuntu-trusty-go_agent
+              STEMCELL_NAME:   bosh-google-kvm-ubuntu-trusty-go_agent
+              BAT_RSPEC_FLAGS: "--tag ~multiple_manual_networks --tag ~raw_ephemeral_storage --tag ~changing_static_ip"
         ensure:
           do:
             - <<: *teardown
@@ -111,7 +110,7 @@ jobs:
         - {get: bosh-release,     trigger: true}
         - {get: cpi-release,      trigger: true}
         - {get: stemcell,         trigger: true, resource: ubuntu-stemcell}
-        #- {get: after-midnight,   trigger: true}
+        - {get: after-midnight,   trigger: true}
         - {get: pipelines,        trigger: false}
         - {get: bosh-cli,         trigger: false}
         - {get: centos-stemcell,  trigger: false} # pass-through
@@ -149,11 +148,11 @@ jobs:
               new-director-config: director-config
             output_mapping:
               new-director-state: director-state
-            params:
-              DEPLOYMENT_NAME: certification
         ensure:
           do:
             - <<: *teardown
+              params:
+                DEPLOYMENT_NAME: certification
             - <<: *destroy-environment
 
   - name: certify-centos
@@ -194,11 +193,11 @@ resource_types:
     repository: ljfranklin/terraform-resource
 
 resources:
-#  - name: after-midnight
-#    type: time
-#    source:
-#      start: 12:00 AM -0700
-#      stop: 2:00 AM -0700
+  - name: after-midnight
+    type: time
+    source:
+      start: 12:00 AM -0700
+      stop: 2:00 AM -0700
   - name: pipelines
     type: git
     source:

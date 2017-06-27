@@ -9,8 +9,8 @@ inputs:
   - name: director-state
   - name: bosh-cli
 
-params:
-  DEPLOYMENT_NAME:        ""
-
 run:
   path: pipelines/shared/tasks/teardown.sh
+
+params:
+  DEPLOYMENT_NAME: ""

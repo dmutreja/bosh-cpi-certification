@@ -19,7 +19,6 @@ fi
 pushd director-state > /dev/null
   # configuration
   source director.env
-  export BOSH_CA_CERT=ca_cert.pem
 
   # Don't exit on failure to delete existing deployment
   set +e

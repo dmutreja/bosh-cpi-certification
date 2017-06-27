@@ -15,7 +15,6 @@ if [ -n "${BOSH_VSPHERE_VCENTER_VLAN}" ]; then
 fi
 
 bosh2 int pipelines/shared/assets/certification-release/certification.yml \
-  -o pipelines/${INFRASTRUCTURE}/assets/certification/ops.yml \
   -v "deployment_name=${DEPLOYMENT_NAME}" \
   -v "release_name=${RELEASE_NAME}" \
   -v "stemcell_name=${STEMCELL_NAME}" \
@@ -23,12 +22,15 @@ bosh2 int pipelines/shared/assets/certification-release/certification.yml \
   -l environment/metadata > /tmp/deployment.yml
 
 source director-state/director.env
-export BOSH_CA_CERT=$( realpath director-state/ca_cert.pem )
 
 pushd pipelines/shared/assets/certification-release
   time bosh2 -n create-release --force --name ${RELEASE_NAME}
   time bosh2 -n upload-release
 popd
 
+time bosh2 -n update-cloud-config \
+  -o pipelines/${INFRASTRUCTURE}/assets/certification/cloud-config-ops.yml \
+  -l environment/metadata \
+  pipelines/shared/assets/certification-release/cloud-config.yml
 time bosh2 -n upload-stemcell $( realpath stemcell/*.tgz )
 time bosh2 -n deploy -d ${DEPLOYMENT_NAME} /tmp/deployment.yml

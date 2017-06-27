@@ -16,8 +16,8 @@ inputs:
 outputs:
   - name: new-director-state
 
-params:
-  DEPLOYMENT_NAME: ""
-
 run:
   path: pipelines/shared/tasks/test-upgrade.sh
+
+params:
+  DEPLOYMENT_NAME: certification

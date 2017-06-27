@@ -17,6 +17,3 @@ outputs:
 
 run:
   path: pipelines/shared/tasks/deploy-director.sh
-
-params:
-  BOSH_LOG_LEVEL:     info
