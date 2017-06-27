@@ -1,7 +1,6 @@
 ---
 cpi: vsphere
 properties:
-  uuid: ((bosh_uuid))
   pool_size: 1
   instances: 1
   second_static_ip: ((network1.staticIP-2))

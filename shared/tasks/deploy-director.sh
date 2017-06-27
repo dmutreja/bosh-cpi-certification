@@ -2,6 +2,7 @@
 
 set -e
 
+source pipelines/shared/utils.sh
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
 
@@ -10,8 +11,6 @@ input_dir=$(realpath director-config/)
 stemcell_dir=$(realpath stemcell/)
 bosh_dir=$(realpath bosh-release/)
 cpi_dir=$(realpath cpi-release/)
-bosh_cli=$(realpath bosh-cli/*bosh-cli-*)
-chmod +x $bosh_cli
 
 # outputs
 output_dir=$(realpath director-state/)
@@ -41,21 +40,11 @@ pushd ${output_dir} > /dev/null
   echo "deploying BOSH..."
 
   set +e
-  BOSH_LOG_PATH=$logfile BOSH_LOG_LEVEL=DEBUG $bosh_cli create-env \
+  BOSH_LOG_PATH=$logfile BOSH_LOG_LEVEL=DEBUG bosh2 create-env \
     --vars-store "${output_dir}/creds.yml" \
-    -v director_name=bosh \
     director.yml
   bosh_cli_exit_code="$?"
   set -e
-
-  # saves Director CA Certificate
-  ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["director_ssl"]["ca"]' \
-    < "${output_dir}/creds.yml" > "${output_dir}/ca_cert.pem"
-  ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["director_ssl"]["certificate"]' \
-    < "${output_dir}/creds.yml" >> "${output_dir}/ca_cert.pem"
-  private_key=$( ruby -r yaml -e 'data = YAML::load(STDIN.read); puts data["ssh"]["private_key"] unless data["ssh"].nil?' \
-    < "${output_dir}/creds.yml")
-  [[ -n "${private_key}" ]] && echo "${private_key}" > "${output_dir}/shared.pem"
 
   if [ ${bosh_cli_exit_code} != 0 ]; then
     echo "bosh-cli deploy failed!" >&2
@@ -63,3 +52,15 @@ pushd ${output_dir} > /dev/null
     exit ${bosh_cli_exit_code}
   fi
 popd > /dev/null
+
+creds_path /director_ssl/ca > "${output_dir}/ca_cert.pem"
+creds_path /director_ssl/certificate >> "${output_dir}/ca_cert.pem"
+
+cat > "${output_dir}/director.env" <<EOF
+export BOSH_ENVIRONMENT="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
+export BOSH_CLIENT="admin"
+export BOSH_CLIENT_SECRET="$( creds_path /admin_password )"
+export BOSH_CA_CERT=director-state/ca_cert.pem
+export BOSH_GW_HOST="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
+export BOSH_GW_USER="jumpbox"
+EOF

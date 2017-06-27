@@ -1,7 +1,6 @@
 ---
 cpi: azure
 properties:
-  uuid: ((bosh_uuid))
   stemcell:
     name: ((stemcell_name))
     version: latest

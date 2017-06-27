@@ -7,7 +7,6 @@ set -e
 : ${USE_REDIS:?}
 
 source pipelines/shared/utils.sh
-source pipelines/${INFRASTRUCTURE}/assets/bats/include.sh
 
 metadata="$( cat environment/metadata )"
 redis_ops=""
@@ -26,6 +25,7 @@ bosh2 int \
   -v bosh_release_uri="file://$(echo bosh-release/*.tgz)" \
   -v cpi_release_uri="file://$(echo cpi-release/*.tgz)" \
   -v stemcell_uri="file://$(echo stemcell/*.tgz)" \
+  -v director_name=bosh \
   -l <( echo "${DIRECTOR_VARS_FILE}" ) \
   bosh-deployment/bosh.yml > /tmp/director.yml
 

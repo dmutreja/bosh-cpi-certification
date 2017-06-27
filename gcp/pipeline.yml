@@ -99,10 +99,10 @@ jobs:
             params:
               <<: *run-bats-params
               STEMCELL_NAME: bosh-google-kvm-ubuntu-trusty-go_agent
-        # ensure:
-        #   do:
-        #     - <<: *teardown
-        #     - <<: *destroy-environment
+        ensure:
+          do:
+            - <<: *teardown
+            - <<: *destroy-environment
 
   - name: test-upgrade
     serial: true
@@ -223,7 +223,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: gcp-certification
+      branch: gcp-certification-2
   - name: receipt
     type: s3
     source:

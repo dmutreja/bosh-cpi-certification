@@ -13,7 +13,6 @@ shared:
     task: prepare-director
     file: pipelines/shared/tasks/prepare-director.yml
     params: &prepare-director-params
-      BOSH_CLIENT_SECRET: {{bosh_client_secret}}
       INFRASTRUCTURE:     azure
       DIRECTOR_VARS_FILE: {{azure_director_vars_file}}
       OPTIONAL_OPS_FILE: |
@@ -29,8 +28,9 @@ shared:
     file: pipelines/shared/tasks/run-bats.yml
     params: &run-bats-params
       INFRASTRUCTURE:     azure
-      BOSH_CLIENT_SECRET: {{bosh_client_secret}}
-      BAT_VCAP_PASSWORD:  {{bat_vcap_password}}
+      BAT_INFRASTRUCTURE: azure
+      BAT_NETWORKING:     manual
+      BAT_RSPEC_FLAGS:    "--tag ~vip_networking --tag ~dynamic_networking --tag ~root_partition --tag ~raw_ephemeral_storage"
 
   - &teardown
     task: teardown
@@ -75,6 +75,7 @@ jobs:
             params:
               <<: *run-bats-params
               STEMCELL_NAME: bosh-azure-hyperv-centos-7-go_agent
+              BAT_RSPEC_FLAGS: "--tag ~raw_ephemeral_storage --tag ~multiple_manual_networks"
         ensure:
           do:
             - <<: *teardown
@@ -100,6 +101,7 @@ jobs:
             params:
               <<: *run-bats-params
               STEMCELL_NAME: bosh-azure-hyperv-ubuntu-trusty-go_agent
+              BAT_RSPEC_FLAGS: "--tag ~raw_ephemeral_storage"
         ensure:
           do:
             - <<: *teardown

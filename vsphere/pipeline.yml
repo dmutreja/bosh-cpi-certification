@@ -14,7 +14,6 @@ shared:
     tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/prepare-director.yml
     params: &prepare-director-params
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
       INFRASTRUCTURE:     vsphere
       DIRECTOR_VARS_FILE: {{vsphere_director_vars_file}}
       OPTIONAL_OPS_FILE:  |
@@ -31,8 +30,9 @@ shared:
     file: pipelines/shared/tasks/run-bats.yml
     params: &run-bats-params
       INFRASTRUCTURE:     vsphere
-      BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+      BAT_INFRASTRUCTURE: vsphere
+      BAT_NETWORKING:     manual
+      BAT_RSPEC_FLAGS:    "--tag ~vip_networking --tag ~dynamic_networking --tag ~root_partition --tag ~raw_ephemeral_storage"
 
   - &teardown
     task: teardown
