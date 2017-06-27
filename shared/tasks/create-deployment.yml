@@ -15,8 +15,8 @@ run:
   path: pipelines/shared/tasks/create-deployment.sh
 
 params:
-  BOSH_VSPHERE_VCENTER_VLAN: ""
-  INFRASTRUCTURE:            ""
-  DEPLOYMENT_NAME:           certification
-  RELEASE_NAME:              certification
-  STEMCELL_NAME:             ""
+  VCENTER_NETWORK_NAME: ""
+  INFRASTRUCTURE:       ""
+  DEPLOYMENT_NAME:      certification
+  RELEASE_NAME:         certification
+  STEMCELL_NAME:        ""

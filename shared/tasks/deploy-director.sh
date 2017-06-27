@@ -60,6 +60,6 @@ export BOSH_ENVIRONMENT="$( state_path /instance_groups/name=bosh/networks/name=
 export BOSH_CLIENT="admin"
 export BOSH_CLIENT_SECRET="$( creds_path /admin_password )"
 export BOSH_CA_CERT="$( creds_path /director_ssl/ca )"
-export BOSH_GW_HOST="$( state_path /instance_groups/name=bosh/networks/name=${NETWORK_NAME}/static_ips/0 2>/dev/null )"
+export BOSH_GW_HOST="${BOSH_ENVIRONMENT}"
 export BOSH_GW_USER="jumpbox"
 EOF

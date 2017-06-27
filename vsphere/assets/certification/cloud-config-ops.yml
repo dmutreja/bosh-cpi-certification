@@ -8,8 +8,11 @@
 - type: replace
   path: /networks/name=private/subnets/0
   value:
+    az: default
     range: ((network1.vCenterCIDR))
     gateway: ((network1.vCenterGateway))
     reserved: ((network1.reservedRange))
+    static: ((network1.staticRange))
+    dns: ((DNS))
     cloud_properties:
-      name: ((bosh_vsphere_vcenter_vlan))
+      name: ((network_name))

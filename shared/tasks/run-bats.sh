@@ -28,7 +28,7 @@ bosh2 int pipelines/${INFRASTRUCTURE}/assets/bats/bats-spec.yml \
 
 source director-state/director.env
 export BAT_PRIVATE_KEY="$( creds_path /jumpbox_ssh/private_key )"
-export BAT_DNS_HOST="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
+export BAT_DNS_HOST="${BOSH_ENVIRONMENT}"
 export BAT_STEMCELL=$(realpath stemcell/*.tgz)
 export BAT_DEPLOYMENT_SPEC=$(realpath bats-config/bats-config.yml)
 export BAT_BOSH_CLI=$(which bosh2)

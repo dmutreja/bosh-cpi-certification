@@ -130,9 +130,9 @@ jobs:
             input_mapping:
               stemcell:                  old-stemcell
             params:
-              BOSH_VSPHERE_VCENTER_VLAN: {{VCENTER_VLAN}}
-              INFRASTRUCTURE:            vsphere
-              STEMCELL_NAME:             bosh-vsphere-esxi-ubuntu-trusty-go_agent
+              VCENTER_NETWORK_NAME: {{VCENTER_NETWORK_NAME}}
+              INFRASTRUCTURE:       vsphere
+              STEMCELL_NAME:        bosh-vsphere-esxi-ubuntu-trusty-go_agent
           - <<: *prepare-director
           - task: test-upgrade
             tags: [vsphere-v6.0]

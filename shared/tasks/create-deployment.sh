@@ -10,8 +10,8 @@ set -e
 source pipelines/shared/utils.sh
 
 vsphere_vars=""
-if [ -n "${BOSH_VSPHERE_VCENTER_VLAN}" ]; then
-  vsphere_vars="-v bosh_vsphere_vcenter_vlan=${BOSH_VSPHERE_VCENTER_VLAN}"
+if [ -n "${VCENTER_NETWORK_NAME}" ]; then
+  vsphere_vars="-v network_name=${VCENTER_NETWORK_NAME}"
 fi
 
 bosh2 int pipelines/shared/assets/certification-release/certification.yml \
@@ -31,6 +31,7 @@ popd
 time bosh2 -n update-cloud-config \
   -o pipelines/${INFRASTRUCTURE}/assets/certification/cloud-config-ops.yml \
   -l environment/metadata \
+  $(echo ${vsphere_vars}) \
   pipelines/shared/assets/certification-release/cloud-config.yml
 time bosh2 -n upload-stemcell $( realpath stemcell/*.tgz )
 time bosh2 -n deploy -d ${DEPLOYMENT_NAME} /tmp/deployment.yml
