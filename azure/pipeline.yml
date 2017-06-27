@@ -34,8 +34,6 @@ shared:
   - &teardown
     task: teardown
     file: pipelines/shared/tasks/teardown.yml
-    params:
-      DEPLOYMENT_NAME: certification
 
   - &create-environment
     put: environment
@@ -151,11 +149,11 @@ jobs:
               new-director-config: director-config
             output_mapping:
               new-director-state: director-state
-            params:
-              DEPLOYMENT_NAME: certification
         ensure:
           do:
             - <<: *teardown
+              params:
+                DEPLOYMENT_NAME: certification
             - <<: *destroy-environment
 
   - name: certify-centos
@@ -205,7 +203,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: master
+      branch: gcp-certification
   - name: bosh-deployment
     type: git
     source:
@@ -225,7 +223,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: master
+      branch: gcp-certification-2
   - name: receipt
     type: s3
     source:

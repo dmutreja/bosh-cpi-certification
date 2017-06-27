@@ -23,6 +23,8 @@ shared:
     task: deploy-director
     tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/deploy-director.yml
+    params:
+      NETWORK_NAME: default
 
   - &run-bats
     task: run-bats
@@ -189,7 +191,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: master
+      branch: gcp-certification
   - name: bosh-deployment
     type: git
     source:
@@ -207,7 +209,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: master
+      branch: gcp-certification-2
   - name: centos-stemcell
     type: bosh-io-stemcell
     source:

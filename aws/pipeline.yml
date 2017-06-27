@@ -68,7 +68,6 @@ shared:
     params: &teardown-params
       BOSH_CLIENT:        {{BOSH_CLIENT}}
       BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-      DEPLOYMENT_NAME:    certification
 
 jobs:
   - name: end2end-us
@@ -253,10 +252,11 @@ jobs:
             new-director-config: director-config
           output_mapping:
             new-director-state:  director-state
-          params:
-            DEPLOYMENT_NAME:     certification
         ensure:
           <<: *teardown
+          params:
+            <<: *teardown-params
+            DEPLOYMENT_NAME: certification
 
   - name: certify-centos
     serial: true
@@ -332,7 +332,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: master
+      branch: gcp-certification
   - name: bosh-deployment
     type: git
     source:
@@ -350,7 +350,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: master
+      branch: gcp-certification-2
   - name: ubuntu-stemcell
     type: bosh-io-stemcell
     source:

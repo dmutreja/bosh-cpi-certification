@@ -2,6 +2,8 @@
 
 set -e
 
+: ${NETWORK_NAME:?}
+
 source pipelines/shared/utils.sh
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
@@ -54,10 +56,10 @@ pushd ${output_dir} > /dev/null
 popd > /dev/null
 
 cat > "${output_dir}/director.env" <<EOF
-export BOSH_ENVIRONMENT="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
+export BOSH_ENVIRONMENT="$( state_path /instance_groups/name=bosh/networks/name=${NETWORK_NAME}/static_ips/0 2>/dev/null )"
 export BOSH_CLIENT="admin"
 export BOSH_CLIENT_SECRET="$( creds_path /admin_password )"
 export BOSH_CA_CERT="$( creds_path /director_ssl/ca )"
-export BOSH_GW_HOST="$( state_path /instance_groups/name=bosh/networks/name=public/static_ips/0 2>/dev/null )"
+export BOSH_GW_HOST="$( state_path /instance_groups/name=bosh/networks/name=${NETWORK_NAME}/static_ips/0 2>/dev/null )"
 export BOSH_GW_USER="jumpbox"
 EOF
