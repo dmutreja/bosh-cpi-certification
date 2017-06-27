@@ -140,7 +140,7 @@ jobs:
               stemcell:        old-stemcell
             params:
               INFRASTRUCTURE: gcp
-              STEMCELL_NAME:  bbosh-google-kvm-ubuntu-trusty-go_agent
+              STEMCELL_NAME:  bosh-google-kvm-ubuntu-trusty-go_agent
           - <<: *prepare-director
           - task: test-upgrade
             file: pipelines/shared/tasks/test-upgrade.yml

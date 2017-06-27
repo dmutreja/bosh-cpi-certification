@@ -20,51 +20,28 @@ provider "google" {
   region      = "${var.google_region}"
 }
 
-resource "google_service_account" "google_service_account" {
-  account_id   = "${var.env_name}"
-}
-
-data "google_iam_policy" "service_account_actor" {
-  binding {
-    role = "roles/iam.serviceAccountActor"
-
-    members = [
-      "serviceAccount:${google_service_account.google_service_account.email}",
-    ]
-  }
-}
-
-resource "google_compute_address" "google_address_director_ubuntu" {
+resource "google_compute_address" "director" {
   name = "${var.env_name}-director-ubuntu"
 }
 
-resource "google_compute_address" "google_address_bats_ubuntu" {
+resource "google_compute_address" "bats" {
   name = "${var.env_name}-bats-ubuntu"
 }
 
-resource "google_compute_address" "google_address_int_ubuntu" {
-  name = "${var.env_name}-int-ubuntu"
-}
-
-resource "google_compute_network" "google_auto_network" {
-  name = "${var.env_name}-auto"
-  auto_create_subnetworks = true
-}
-
-resource "google_compute_network" "google_custom_network" {
+resource "google_compute_network" "network" {
   name = "${var.env_name}-custom"
   auto_create_subnetworks = false
 }
 
-resource "google_compute_subnetwork" "google_subnetwork" {
+resource "google_compute_subnetwork" "subnetwork" {
   name          = "${var.env_name}-${var.google_region}"
   ip_cidr_range = "10.0.0.0/24"
-  network       = "${google_compute_network.google_custom_network.self_link}"
+  network       = "${google_compute_network.network.self_link}"
 }
 
-resource "google_compute_firewall" "google_firewall_internal" {
+resource "google_compute_firewall" "internal" {
   name    = "${var.env_name}-internal"
-  network = "${google_compute_network.google_custom_network.name}"
+  network = "${google_compute_network.network.name}"
 
   description = "BOSH CI Internal traffic"
 
@@ -82,9 +59,9 @@ resource "google_compute_firewall" "google_firewall_internal" {
   target_tags = ["${var.env_name}-internal"]
 }
 
-resource "google_compute_firewall" "google_firewall_external" {
+resource "google_compute_firewall" "external" {
   name    = "${var.env_name}-external"
-  network = "${google_compute_network.google_custom_network.name}"
+  network = "${google_compute_network.network.name}"
 
   description = "BOSH CI External traffic"
 
@@ -100,139 +77,42 @@ resource "google_compute_firewall" "google_firewall_external" {
   target_tags = ["${var.env_name}-external"]
 }
 
-resource "google_compute_target_pool" "google_target_pool" {
-  name = "${var.env_name}"
-}
-
-resource "google_compute_instance_group" "google_backend_service" {
-  name = "${var.env_name}"
-  zone = "${var.google_zone}"
-}
-
-resource "google_compute_http_health_check" "google_backend_service" {
-  name = "${var.env_name}"
-}
-
-resource "google_compute_backend_service" "google_backend_service" {
-  name        = "${var.env_name}"
-  port_name   = "http"
-  timeout_sec = 30
-
-  backend {
-    group = "${google_compute_instance_group.google_backend_service.self_link}"
-  }
-
-  health_checks = ["${google_compute_http_health_check.google_backend_service.self_link}"]
-}
-
-resource "google_compute_instance_group" "google_region_backend_service" {
-  name = "${var.env_name}-region"
-  zone = "${var.google_zone}"
-
-  instances = ["${google_compute_instance.google_region_backend_service.self_link}"]
-}
-
-resource "google_compute_health_check" "google_region_backend_service" {
-  name         = "${var.env_name}"
-
-  tcp_health_check {}
-}
-
-resource "google_compute_instance" "google_region_backend_service" {
-  name         = "${var.env_name}"
-  zone         = "${var.google_zone}"
-  machine_type = "f1-micro"
-
-  network_interface {
-    subnetwork = "${google_compute_subnetwork.google_subnetwork.name}"
-
-    address = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, -3)}"
-  }
-
-  disk {
-    image = "debian-cloud/debian-8"
-  }
-
-  depends_on = ["google_compute_subnetwork.google_subnetwork"]
-}
-
-resource "google_compute_region_backend_service" "google_region_backend_service" {
-  name        = "${var.env_name}"
-  protocol    = "TCP"
-  timeout_sec = 30
-
-  backend {
-    group = "${google_compute_instance_group.google_region_backend_service.self_link}"
-  }
-
-  health_checks = ["${google_compute_health_check.google_region_backend_service.self_link}"]
-}
-
 output "project_id" {
   value = "${var.google_project}"
 }
-# output "Region" {
-#   value = "${var.google_region}"
-# }
 output "zone" {
   value = "${var.google_zone}"
 }
 output "network" {
-  value = "${google_compute_network.google_custom_network.name}"
+  value = "${google_compute_network.network.name}"
 }
 output "subnetwork" {
-  value = "${google_compute_subnetwork.google_subnetwork.name}"
+  value = "${google_compute_subnetwork.subnetwork.name}"
 }
 output "internal_cidr" {
-  value = "${google_compute_subnetwork.google_subnetwork.ip_cidr_range}"
+  value = "${google_compute_subnetwork.subnetwork.ip_cidr_range}"
 }
 output "tags" {
-  value = ["${google_compute_firewall.google_firewall_internal.name}","${google_compute_firewall.google_firewall_external.name}"]
+  value = ["${google_compute_firewall.internal.name}","${google_compute_firewall.external.name}"]
 }
 output "external_ip" {
-  value = "${google_compute_address.google_address_director_ubuntu.address}"
+  value = "${google_compute_address.director.address}"
 }
 output "internal_ip" {
-  value = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 6)}"
+  value = "${cidrhost(google_compute_subnetwork.subnetwork.ip_cidr_range, 6)}"
 }
 output "internal_gw" {
-  value = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 1)}"
+  value = "${cidrhost(google_compute_subnetwork.subnetwork.ip_cidr_range, 1)}"
 }
 output "reserved_range" {
-  value = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 2)}-${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 15)}"
+  value = "${cidrhost(google_compute_subnetwork.subnetwork.ip_cidr_range, 2)}-${cidrhost(google_compute_subnetwork.subnetwork.ip_cidr_range, 15)}"
 }
-
-# output "StaticRange" {
-#   value = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 16)}-${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 40)}"
-# }
-# output "IntegrationStaticIPs" {
-#   value = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 10)},${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 11)},${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 12)}"
-# }
-# output "IntegrationExternalIP" {
-#   value = "${google_compute_address.google_address_int_ubuntu.address}"
-# }
-# output "TargetPool" {
-#   value = "${google_compute_target_pool.google_target_pool.name}"
-# }
-# output "BackendService" {
-#   value = "${google_compute_backend_service.google_backend_service.name}"
-# }
-# output "RegionBackendService" {
-#   value = "${google_compute_region_backend_service.google_region_backend_service.name}"
-# }
-# output "ILBInstanceGroup" {
-#   value = "${google_compute_instance_group.google_region_backend_service.name}"
-# }
-# output "ServiceAccount" {
-#   value = "${google_service_account.google_service_account.email}"
-# }
-
 output "bats_external_ip" {
-  value = "${google_compute_address.google_address_bats_ubuntu.address}"
+  value = "${google_compute_address.bats.address}"
 }
 output "bats_static_ip_pair" {
-  value = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 13)},${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 14)}"
+  value = ["${cidrhost(google_compute_subnetwork.subnetwork.ip_cidr_range, 13)}","${cidrhost(google_compute_subnetwork.subnetwork.ip_cidr_range, 14)}"]
 }
 output "bats_static_ip" {
-  value = "${cidrhost(google_compute_subnetwork.google_subnetwork.ip_cidr_range, 7)}"
+  value = "${cidrhost(google_compute_subnetwork.subnetwork.ip_cidr_range, 7)}"
 }
