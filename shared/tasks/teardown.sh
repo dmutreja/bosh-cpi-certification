@@ -17,11 +17,9 @@ if [ -d "director-state/.bosh" ]; then
 fi
 
 pushd director-state > /dev/null
-  # configuration
-  source director.env
-
   # Don't exit on failure to delete existing deployment
   set +e
+    source director.env
     # teardown deployments against BOSH Director
     if [ -n "${DEPLOYMENT_NAME}" ]; then
       time bosh2 -n delete-deployment -d ${DEPLOYMENT_NAME} --force
