@@ -205,7 +205,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: gcp-certification
+      branch: master
   - name: bosh-deployment
     type: git
     source:
@@ -225,7 +225,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: gcp-certification-2
+      branch: gocli-bats
   - name: receipt
     type: s3
     source:
