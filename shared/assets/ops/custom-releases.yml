@@ -8,3 +8,6 @@
   value:
     name: bosh
     url: ((bosh_release_uri))
+
+# - path: /instance_groups/name=bosh/jobs/name=health_monitor
+#   type: remove

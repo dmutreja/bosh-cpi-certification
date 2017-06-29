@@ -71,7 +71,7 @@ jobs:
             params:
               <<: *run-bats-params
               STEMCELL_NAME:   bosh-google-kvm-centos-7-go_agent
-              BAT_RSPEC_FLAGS: "--tag ~root_partition --tag ~multiple_manual_networks --tag ~raw_ephemeral_storage --tag ~changing_static_ip"
+              BAT_RSPEC_FLAGS: "--tag ~multiple_manual_networks --tag ~raw_ephemeral_storage --tag ~changing_static_ip"
         ensure:
           do:
             - <<: *teardown

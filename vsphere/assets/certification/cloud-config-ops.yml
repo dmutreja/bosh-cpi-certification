@@ -13,6 +13,6 @@
     gateway: ((network1.vCenterGateway))
     reserved: ((network1.reservedRange))
     static: ((network1.staticRange))
-    dns: ((DNS))
+    dns: [((DNS))]
     cloud_properties:
       name: ((network_name))

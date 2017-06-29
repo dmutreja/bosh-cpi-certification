@@ -11,17 +11,9 @@ set -e
 source pipelines/shared/utils.sh
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
-# Override this to alter metadata before interpolation
-function transform_metadata() {
-  cat
-}
-# source pipelines/${INFRASTRUCTURE}/assets/bats/include.sh
 
 metadata="$( cat environment/metadata )"
-
 mkdir -p bats-config
-# create_bats_env "${metadata}" "${BAT_VCAP_PASSWORD}" "${BOSH_CLIENT_SECRET}" "${STEMCELL_NAME}" > bats-config/bats.env
-
 bosh2 int pipelines/${INFRASTRUCTURE}/assets/bats/bats-spec.yml \
   -v "stemcell_name=${STEMCELL_NAME}" \
   -l environment/metadata > bats-config/bats-config.yml

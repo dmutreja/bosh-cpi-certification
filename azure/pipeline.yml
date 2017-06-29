@@ -18,6 +18,7 @@ shared:
       OPTIONAL_OPS_FILE: |
         -o bosh-deployment/azure/custom-environment.yml
         -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+        -o pipelines/shared/assets/ops/remove-provider-cert.yml
 
   - &deploy-director
     task: deploy-director
@@ -92,6 +93,11 @@ jobs:
         - {get: bosh-deployment, trigger: false}
       - <<: *create-environment
       - <<: *prepare-director
+        params:
+          <<: *prepare-director-params
+          OPTIONAL_OPS_FILE: |
+            -o bosh-deployment/azure/custom-environment.yml
+            -o bosh-deployment/external-ip-with-registry-not-recommended.yml
       - do:
           - <<: *deploy-director
           - <<: *run-bats

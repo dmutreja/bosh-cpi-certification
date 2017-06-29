@@ -118,6 +118,9 @@ jobs:
         params:
           <<: *prepare-director-params
           USE_REDIS:         true
+          OPTIONAL_OPS_FILE: |
+            -o bosh-deployment/vsphere/resource-pool.yml
+            -o pipelines/shared/assets/ops/remove-provider-cert.yml
       - do:
           - <<: *deploy-director
             input_mapping:
