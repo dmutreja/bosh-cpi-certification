@@ -114,7 +114,7 @@ jobs:
         - {get: pipelines,        trigger: false}
         - {get: bosh-cli,         trigger: false}
         - {get: centos-stemcell,  trigger: false} # pass-through
-        - {get: old-stemcell,     trigger: false, version: {version: "3421"}}
+        - {get: old-stemcell,     trigger: false, version: {version: "3363"}}
         - {get: old-bosh-release, trigger: false, version: {version: "255.4"}, resource: bosh-release}
         - {get: old-cpi-release,  trigger: false, version: {version: "25.6.2"},  resource: cpi-release}
         - {get: bosh-deployment,  trigger: false}
@@ -127,6 +127,9 @@ jobs:
         params:
           <<: *prepare-director-params
           USE_REDIS:         true
+          OPTIONAL_OPS_FILE: |
+            -o bosh-deployment/external-ip-not-recommended.yml
+            -o pipelines/shared/assets/ops/remove-provider-cert.yml
       - do:
           - <<: *deploy-director
             input_mapping:
