@@ -332,7 +332,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
-      branch: master
+      branch: certify-aws-legacy # change to master once https://www.pivotaltracker.com/story/show/147049339 is finished and merged to master
   - name: bosh-deployment
     type: git
     source:
