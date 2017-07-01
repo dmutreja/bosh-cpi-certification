@@ -154,8 +154,6 @@ jobs:
         ensure:
           do:
             - <<: *teardown
-              params:
-                DEPLOYMENT_NAME: certification
             - <<: *destroy-environment
 
   - name: certify-centos

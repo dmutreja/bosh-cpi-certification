@@ -11,6 +11,3 @@ inputs:
 
 run:
   path: pipelines/shared/tasks/teardown.sh
-
-params:
-  DEPLOYMENT_NAME: ""

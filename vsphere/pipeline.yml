@@ -41,8 +41,6 @@ shared:
     task: teardown
     tags: [vsphere-v6.0]
     file: pipelines/shared/tasks/teardown.yml
-    params:
-      DEPLOYMENT_NAME: certification
 
 jobs:
   - name: bats-centos
