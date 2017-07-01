@@ -18,6 +18,7 @@ shared:
       DIRECTOR_VARS_FILE: {{vsphere_director_vars_file}}
       OPTIONAL_OPS_FILE:  |
         -o bosh-deployment/vsphere/resource-pool.yml
+        -o pipelines/shared/assets/ops/remove-hm.yml
 
   - &deploy-director
     task: deploy-director
