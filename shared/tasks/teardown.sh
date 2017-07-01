@@ -17,13 +17,14 @@ if [ -d "director-state/.bosh" ]; then
 fi
 
 pushd director-state > /dev/null
-  # Don't exit on failure to delete existing deployment
+  # Don't exit on failure to delete existing deployments
   set +e
     source director.env
+
     # teardown deployments against BOSH Director
-    if [ -n "${DEPLOYMENT_NAME}" ]; then
-      time bosh2 -n delete-deployment -d ${DEPLOYMENT_NAME} --force
-    fi
+    echo "deleting all deployments"
+    bosh2 deployments | awk '{print $1}' | xargs --no-run-if-empty -n 1 bosh2 -n delete-deployment --force -d
+    echo "cleaning up bosh BOSH Director..."
     time bosh2 -n clean-up --all
   set -e
 
