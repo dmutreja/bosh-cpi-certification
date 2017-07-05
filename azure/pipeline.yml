@@ -133,7 +133,11 @@ jobs:
           cpi-release:  old-cpi-release
         params:
           <<: *prepare-director-params
-          USE_REDIS:         true
+          OPTIONAL_OPS_FILE: |
+            -o pipelines/shared/assets/ops/redis.yml
+            -o bosh-deployment/azure/custom-environment.yml
+            -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+            -o pipelines/shared/assets/ops/remove-provider-cert.yml
       - do:
           - <<: *deploy-director
             input_mapping:

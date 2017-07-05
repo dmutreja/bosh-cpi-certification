@@ -23,4 +23,3 @@ params:
   DIRECTOR_VARS_FILE: ""
   INFRASTRUCTURE:     ""
   OPTIONAL_OPS_FILE:  ""
-  USE_REDIS:          false
