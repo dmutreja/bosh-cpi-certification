@@ -1,3 +1,4 @@
+# Variables
 variable "azure_client_id" {}
 variable "azure_client_secret" {}
 variable "azure_subscription_id" {}
@@ -6,6 +7,16 @@ variable "location" {
   default = "East US"
 }
 variable "env_name" {}
+variable "azure_environment" {}
+variable "environments" {
+  type = "map"
+  default = {
+    AzureCloud        = "public"
+    AzureUSGovernment = "usgovernment"
+    AzureGermanCloud  = "german"
+    AzureChinaCloud   = "china"
+  }
+}
 
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
@@ -13,6 +24,7 @@ provider "azurerm" {
   client_secret   = "${var.azure_client_secret}"
   subscription_id = "${var.azure_subscription_id}"
   tenant_id       = "${var.azure_tenant_id}"
+  environment     = "${var.environments[var.azure_environment]}"
 }
 # Create a resource group
 resource "azurerm_resource_group" "azure_rg_bosh" {
@@ -143,6 +155,9 @@ resource "azurerm_public_ip" "azure_ip_bats" {
 
 output "external_ip" {
   value = "${azurerm_public_ip.azure_ip_bosh.ip_address}"
+}
+output "environment" {
+  value = "${var.azure_environment}"
 }
 output "vnet_name" {
   value = "${azurerm_virtual_network.azure_bosh_network.name}"
