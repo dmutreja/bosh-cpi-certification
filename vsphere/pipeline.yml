@@ -144,8 +144,6 @@ jobs:
               new-director-config: director-config
             output_mapping:
               new-director-state: director-state
-            params:
-              DEPLOYMENT_NAME:        certification
         ensure:
           do:
             - <<: *teardown

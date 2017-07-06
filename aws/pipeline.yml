@@ -8,66 +8,54 @@ groups:
       - test-upgrade
       - certify-centos
       - certify-ubuntu
-      - recreate-infrastructure-us
 
 shared:
   - &prepare-director
     task: prepare-director
-    file: pipelines/aws/tasks/prepare-director.yml
+    file: pipelines/shared/tasks/prepare-director.yml
     params: &prepare-director-params
-      BOSH_CLIENT:        {{BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-      AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-      AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-      AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-      PUBLIC_KEY_NAME:    {{PUBLIC_KEY_NAME}}
-      PRIVATE_KEY_DATA:   {{PRIVATE_KEY_DATA}}
-      AWS_STACK_NAME:     ""
+      INFRASTRUCTURE:     aws
+      DIRECTOR_VARS_FILE: {{aws_director_vars_file}}
+      OPTIONAL_OPS_FILE: |
+        -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+        -o pipelines/shared/assets/ops/remove-provider-cert.yml
 
   - &deploy-director
     task: deploy-director
     file: pipelines/shared/tasks/deploy-director.yml
-    params: &deploy-director-params
-      BOSH_CLIENT: {{BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-
-  - &prepare-environment
-    task: prepare-environment
-    file: pipelines/aws/tasks/prepare-environment.yml
-    params: &prepare-environment-params
-      AWS_ACCESS_KEY_ID:     {{AWS_ACCESS_KEY}}
-      AWS_SECRET_ACCESS_KEY: {{AWS_SECRET_KEY}}
-      AWS_DEFAULT_REGION:    {{AWS_REGION_NAME}}
-      PUBLIC_KEY_NAME:       {{PUBLIC_KEY_NAME}}
-      AWS_STACK_NAME:        ""
 
   - &run-bats
     task: run-bats
     file: pipelines/shared/tasks/run-bats.yml
     params: &run-bats-params
       INFRASTRUCTURE:     aws
-      BAT_VCAP_PASSWORD:  {{BAT_VCAP_PASSWORD}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
+      BAT_INFRASTRUCTURE: aws
+      BAT_NETWORKING:     manual
+      BAT_RSPEC_FLAGS:    "--tag ~multiple_manual_networks --tag ~root_partition"
 
-  - &run-e2e
+  - &run-end-2-end
     task: run-e2e
-    file: pipelines/aws/tasks/run-e2e.yml
-    params: &run-e2e-params
-      AWS_ACCESS_KEY:      {{AWS_ACCESS_KEY}}
-      AWS_SECRET_KEY:      {{AWS_SECRET_KEY}}
-      AWS_REGION_NAME:     {{AWS_REGION_NAME}}
-      BOSH_CLIENT:         {{BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET:  {{BOSH_CLIENT_SECRET}}
-      AWS_STACK_NAME:      {{AWS_E2E_STACK_NAME}}
-      STEMCELL_NAME:       ""
-      HEAVY_STEMCELL_NAME: ""
+    file: bosh-cpi-src/ci/tasks/run-e2e.yml
+
+  - &create-environment
+    put: environment
+    params:
+      delete_on_failure: true
+      generate_random_name: true
+      terraform_source: pipelines/aws/assets/terraform
+
+  - &destroy-environment
+    put: environment
+    params:
+      action: destroy
+      env_name_file: environment/name
+      terraform_source: pipelines/aws/assets/terraform
+    get_params:
+      action: destroy
 
   - &teardown
     task: teardown
     file: pipelines/shared/tasks/teardown.yml
-    params: &teardown-params
-      BOSH_CLIENT:        {{BOSH_CLIENT}}
-      BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
 
 jobs:
   - name: end2end-us
@@ -81,6 +69,7 @@ jobs:
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
         - {get: bosh-deployment, trigger: false}
+        - {get: bosh-cpi-src,    trigger: false}
         - get: heavy-stemcell
           resource: heavy-ubuntu-stemcell
           params:
@@ -90,24 +79,24 @@ jobs:
           trigger: true
           params:
             preserve_filename: true
-      - <<: *prepare-director
-        file: pipelines/aws/tasks/prepare-director-iam.yml
-        params:
-          <<: *prepare-director-params
-          AWS_STACK_NAME:   {{AWS_E2E_STACK_NAME}}
+      - <<: *create-environment
       - do:
-          - <<: *deploy-director
-          - <<: *run-e2e
-            params:
-              <<: *run-e2e-params
-              STEMCELL_NAME:       *ubuntu-stemcell
-              HEAVY_STEMCELL_NAME: *heavy-ubuntu-stemcell
-              AWS_STACK_NAME:      {{AWS_E2E_STACK_NAME}}
-        ensure:
-          <<: *teardown
+        - <<: *prepare-director
           params:
-            <<: *teardown-params
-            DEPLOYMENT_NAME: e2e-test
+            <<: *prepare-director-params
+            OPTIONAL_OPS_FILE:  |
+              -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+              -o pipelines/shared/assets/ops/remove-provider-cert.yml
+              -o pipelines/aws/assets/ops/iam-instance-profile-ops-file.yml
+        - do:
+            - <<: *deploy-director
+            - <<: *run-end-2-end
+          ensure:
+            do:
+              - <<: *teardown
+        ensure:
+          do:
+            - <<: *destroy-environment
 
   - name: bats-centos
     serial: true
@@ -125,22 +114,27 @@ jobs:
           trigger: true
           params:
             preserve_filename: true
-      - <<: *prepare-director
-        params:
-          <<: *prepare-director-params
-          AWS_STACK_NAME: centos-manual-bats
+      - <<: *create-environment
       - do:
+        - <<: *prepare-director
+          params:
+            <<: *prepare-director-params
+            OPTIONAL_OPS_FILE:  |
+              -o pipelines/shared/assets/ops/remove-hm.yml
+              -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+              -o pipelines/shared/assets/ops/remove-provider-cert.yml
+        - do:
           - <<: *deploy-director
-          - <<: *prepare-environment
-            params:
-              <<: *prepare-environment-params
-              AWS_STACK_NAME: centos-manual-bats
           - <<: *run-bats
             params:
               <<: *run-bats-params
               STEMCELL_NAME: *centos-stemcell
+          ensure:
+            do:
+              - <<: *teardown
         ensure:
-          <<: *teardown
+          do:
+            - <<: *destroy-environment
 
   - name: bats-ubuntu
     serial: true
@@ -158,22 +152,27 @@ jobs:
           trigger: true
           params:
             preserve_filename: true
-      - <<: *prepare-director
-        params:
-          <<: *prepare-director-params
-          AWS_STACK_NAME: ubuntu-manual-bats
+      - <<: *create-environment
       - do:
+        - <<: *prepare-director
+          params:
+            <<: *prepare-director-params
+            OPTIONAL_OPS_FILE:  |
+              -o pipelines/shared/assets/ops/remove-hm.yml
+              -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+              -o pipelines/shared/assets/ops/remove-provider-cert.yml
+        - do:
           - <<: *deploy-director
-          - <<: *prepare-environment
-            params:
-              <<: *prepare-environment-params
-              AWS_STACK_NAME: ubuntu-manual-bats
           - <<: *run-bats
             params:
               <<: *run-bats-params
               STEMCELL_NAME: *ubuntu-stemcell
+          ensure:
+            do:
+              - <<: *teardown
         ensure:
-          <<: *teardown
+          do:
+            - <<: *destroy-environment
 
   - name: test-upgrade
     serial: true
@@ -200,6 +199,7 @@ jobs:
             version: "3232.15"
           params:
             preserve_filename: true
+      - <<: *create-environment
       - <<: *prepare-director
         input_mapping:
           stemcell:     old-stemcell
@@ -207,44 +207,24 @@ jobs:
           cpi-release:  old-cpi-release
         params:
           <<: *prepare-director-params
-          AWS_STACK_NAME:    certify-upgrade
-          USE_REDIS:         true
+          OPTIONAL_OPS_FILE: |
+            -o pipelines/shared/assets/ops/redis.yml
+            -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+            -o pipelines/shared/assets/ops/remove-provider-cert.yml
       - do:
         - <<: *deploy-director
           input_mapping:
             stemcell:     old-stemcell
             bosh-release: old-bosh-release
             cpi-release:  old-cpi-release
-        - task: prepare-deployment
-          file: pipelines/aws/tasks/prepare-deployment.yml
-          params:
-            BOSH_CLIENT:        {{BOSH_CLIENT}}
-            BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-            AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-            AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-            AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-            AWS_STACK_NAME:     certify-upgrade
-            RELEASE_NAME:       certification
-            DEPLOYMENT_NAME:    certification
-            STEMCELL_NAME:      bosh-aws-xen-hvm-ubuntu-trusty-go_agent
         - task: create-deployment
-          file: pipelines/aws/tasks/create-deployment.yml
+          file: pipelines/shared/tasks/create-deployment.yml
           input_mapping:
-            stemcell:           old-stemcell
+            stemcell: old-stemcell
           params:
-            BOSH_CLIENT:        {{BOSH_CLIENT}}
-            BOSH_CLIENT_SECRET: {{BOSH_CLIENT_SECRET}}
-            AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-            AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-            AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-            AWS_STACK_NAME:     certify-upgrade
-            RELEASE_NAME:       certification
-            DEPLOYMENT_NAME:    certification
+            INFRASTRUCTURE: aws
+            STEMCELL_NAME:  bosh-aws-xen-hvm-ubuntu-trusty-go_agent
         - <<: *prepare-director
-          params:
-            <<: *prepare-director-params
-            AWS_STACK_NAME:    certify-upgrade
-            USE_REDIS:         false
         - task: test-upgrade
           file: pipelines/shared/tasks/test-upgrade.yml
           input_mapping:
@@ -253,10 +233,9 @@ jobs:
           output_mapping:
             new-director-state:  director-state
         ensure:
-          <<: *teardown
-          params:
-            <<: *teardown-params
-            DEPLOYMENT_NAME: certification
+          do:
+            - <<: *teardown
+            - <<: *destroy-environment
 
   - name: certify-centos
     serial: true
@@ -288,39 +267,11 @@ jobs:
           STEMCELL_NAME:    *ubuntu-stemcell
       - {put: receipt, params: {file: certification/*-receipt.json}}
 
-  - name: recreate-infrastructure-us
-    serial: true
-    plan:
-      - {get: pipelines, trigger: false}
-      - aggregate:
-        - task: prepare-ubuntu-manual-bats-infrastructure
-          file: pipelines/aws/tasks/recreate-infrastructure.yml
-          params:
-            AWS_STACK_NAME:     ubuntu-manual-bats
-            AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-            AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-            AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-        - task: prepare-centos-manual-bats-infrastructure
-          file: pipelines/aws/tasks/recreate-infrastructure.yml
-          params:
-            AWS_STACK_NAME:     centos-manual-bats
-            AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-            AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-            AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-        - task: prepare-e2e-infrastructure
-          file: pipelines/aws/tasks/recreate-infrastructure.yml
-          params:
-            AWS_STACK_NAME:     {{AWS_E2E_STACK_NAME}}
-            AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-            AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-            AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-        - task: prepare-upgrade-infrastructure
-          file: pipelines/aws/tasks/recreate-infrastructure.yml
-          params:
-            AWS_ACCESS_KEY:     {{AWS_ACCESS_KEY}}
-            AWS_SECRET_KEY:     {{AWS_SECRET_KEY}}
-            AWS_REGION_NAME:    {{AWS_REGION_NAME}}
-            AWS_STACK_NAME:     certify-upgrade
+resource_types:
+  - name: terraform_type
+    type: docker-image
+    source:
+      repository: ljfranklin/terraform-resource
 
 resources:
   - name: after-midnight
@@ -328,6 +279,13 @@ resources:
     source:
       start: 12:00 AM -0700
       stop: 2:00 AM -0700
+  - name: bosh-cpi-src
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/bosh-aws-cpi-release.git
+      branch: master
+      paths:
+        - ci/**
   - name: pipelines
     type: git
     source:
@@ -350,7 +308,7 @@ resources:
     type: git
     source:
       uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: master
+      branch: gocli-bats
   - name: ubuntu-stemcell
     type: bosh-io-stemcell
     source:
@@ -383,3 +341,16 @@ resources:
       bucket: {{certification__bucket}}
       regexp: .*-(\d+)-receipt\.json
       region_name: us-east-1
+  - name: environment
+    type: terraform_type
+    source:
+      storage:
+        access_key_id:     {{terraform_aws_access_key}}
+        secret_access_key: {{terraform_aws_secret_key}}
+        bucket:            {{terraform_bucket}}
+        bucket_path:       terraform-state
+      vars:
+        access_key: {{AWS_ACCESS_KEY}}
+        secret_key: {{AWS_SECRET_KEY}}
+        region:     {{AWS_REGION_NAME}}
+        public_key: {{PUBLIC_KEY}}

@@ -1,5 +1,0 @@
----
-name: awscli
-
-files:
-- awscli/awscli-bundle.zip
