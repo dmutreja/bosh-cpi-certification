@@ -24,54 +24,43 @@ tests. This is meant to complement the existing tests, not to replace.
   ```
 
 
-# bosh CPI certification
-
-The bosh CPI certification is intended to combine scripts and pipelines for certifying bosh CPI, bosh releases and stemcells. This will provide more confidence a fully working director is able to be successfuly deployed with all stemcell flavors and upgraded from not so old, but also not so new versions.
+# BOSH CPI Certification
 
 * What are we testing?
-	- bosh CPI releases.
+	- BOSH CPI releases
 * Why are we testing?
-	- To provide more confidence new releases of stemcells, bosh and CPIs work together properly.
-* When will the pipeline run?
+	- To provide a high level of confidence that new releases of BOSH, BOSH stemcells, and BOSH CPIs work together properly
+* When will the certification pipeline run?
 	- Whenever any of the following are released: (`trigger: true`)
 		1. [bosh-release](https://bosh.io/releases/github.com/cloudfoundry/bosh?all=1)
-		2. bosh-\<iaas\>-cpi-release
-		3. [stemcell](https://bosh.io/stemcells)
-        4. every day at midnight. why? why not? Concourse will do the work ;)
+		1. bosh-\<iaas\>-cpi-release
+		1. [stemcell](https://bosh.io/stemcells)
+        1. Every day at midnight. Why? Why not? Concourse will do the work ;)
 * How are we testing?
-	1. We run [BATs](https://github.com/cloudfoundry/bosh-acceptance-tests) for every flavor of stemcells (ubuntu-trusty and centos-7).
-	2. A bosh director upgrade test from a previous version family stemcell (e.g. 3363.x to 3421.latest).
-	3. Specific IaaS end-2-end tests, if necessary.
+  - Testing for certification consists of the following test scenarios:
+    1. [BATs](https://github.com/cloudfoundry/bosh-acceptance-tests/tree/gocli-bats) are run for every flavor of stemcells (ubuntu-trusty and centos-7)
+    1. A BOSH director upgrade test is run from a previous version family stemcell (e.g. 3363.x to 3421.latest)
+    1. Specific IaaS end-2-end tests, if necessary
 
 
-## BATs
-0. Setup infrastructure environment from scratch, we use [Terraform resource](https://github.com/ljfranklin/terraform-resource) when and wherever we can. It works beautifully.
-0. Deploy bosh director with latest bosh-release, iaas specific cpi-release and stemcell
+## BATs - BOSH Acceptance Tests
+0. Set up infrastructure environment from scratch
+  - We use [Terraform resource](https://github.com/ljfranklin/terraform-resource) whenever and wherever we can. It works beautifully.
+0. Deploy BOSH director with latest bosh-release, IaaS-specific cpi-release, and stemcell
 0. Run BATs
-0. Teardown director
-0. Teardown infrasctructure environment
+0. Tear down BOSH director
+0. Tear down infrastructure environment
 
-## Upgrade test
-0. Setup infrastructure environment from scratch, we use [Terraform resource](https://github.com/ljfranklin/terraform-resource) when and wherever we can. It works beautifully.
-0. Deploy bosh director with old bosh-release (255.4), iaas specific cpi-release (X) and stemcell (3363.x)
+## BOSH Director Upgrade Test
+0. Set up infrastructure environment from scratch, we use [Terraform resource](https://github.com/ljfranklin/terraform-resource) when and wherever we can. It works beautifully.
+0. Deploy BOSH director with old bosh-release (255.4), IaaS-specific cpi-release (X), and stemcell (3363.x)
 0. Deploy certification-release
-0. Redeploy bosh director with latest bosh-release, iaas specific cpi-release and stemcell
+0. Redeploy bosh director with latest bosh-release, IaaS-specific, cpi-release, and stemcell
 0. Redeploy certification-release with `--recreate`
-0. Teardown director
-0. Teardown infrasctructure environment
+0. Tear down BOSH director
+0. Tear down infrastructure environment
 
-## End-2-end test
-TODO
-
-# Setting up your own CPI certification pipeline
-
-Setup folder structure: 
-```
-export iaas_certification=<iaas>
-cp -r fake "${iaas_certification}"
-replace <fake> for "${iaas_certification}"
-```
-The folder structure will look somethings like this:
+The folder structure looks like this:
 ```
 .
 ├── iaas
@@ -84,14 +73,31 @@ The folder structure will look somethings like this:
     └── pipeline.yml
 ```
 
+`iaas/bats/bats-spec.yml`: Manifest with all IaaS-specific configurations for BATs. Make a PR to add the IaaS-specific template to the [BATs template folder](https://github.com/cloudfoundry/bosh-acceptance-tests/tree/gocli-bats/templates).
 
-# bosh CPIs
+`iaas/certification/cloud-config-ops.yml`: Ops file to add IaaS-specific properties to the [certification cloud-config](https://github.com/cloudfoundry-incubator/bosh-cpi-certification/blob/46152f8d50562c39cb70d0f442920c7b78a0c752/shared/assets/certification-release/cloud-config.yml)
+
+`iaas/ops/custom-cpi-release.yml`: Used by the certification pipeline to upload a specific BOSH CPI release version. See example below:
+```
+- type: replace
+  path: /releases/name=bosh-<iaas>-cpi
+  value:
+    name: bosh-<iaas>-cpi
+    url: ((cpi_release_uri))
+```
+
+`iaas/pipeline.yml`: Your Concourse certification pipeline YAML configuration. See [example](https://github.com/cloudfoundry-incubator/bosh-cpi-certification/blob/46152f8d50562c39cb70d0f442920c7b78a0c752/gcp/pipeline.yml).
+
+# BOSH CPIs
 * [vSphere](https://github.com/cloudfoundry-incubator/bosh-vsphere-cpi-release)
 * [AWS](https://github.com/cloudfoundry-incubator/bosh-aws-cpi-release)
+* [vCloud](https://github.com/cloudfoundry-incubator/bosh-vcloud-cpi-release)
 * [GCP](https://github.com/cloudfoundry-incubator/bosh-google-cpi-release)
 * [OpenStack](https://github.com/cloudfoundry-incubator/bosh-openstack-cpi-release)
 * [Azure](https://github.com/cloudfoundry-incubator/bosh-azure-cpi-release)
-* [vCloud](https://github.com/cloudfoundry-incubator/bosh-vcloud-cpi-release)
+* [SoftLayer](https://github.com/cloudfoundry/bosh-softlayer-cpi-release)
+* [RackHD](https://github.com/cloudfoundry-incubator/bosh-rackhd-cpi-release)
+* [Photon](https://github.com/cloudfoundry-incubator/bosh-photon-cpi-release)
 
 Others:
 * [VirtualBox](https://github.com/cppforlife/bosh-virtualbox-cpi-release)
