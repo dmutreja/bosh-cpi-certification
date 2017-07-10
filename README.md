@@ -1,30 +1,7 @@
-## BOSH CPI CERTIFICATION
+# BOSH CPI Certification
 
 This repository contains additional tests above and beyond unit and integration
 tests. This is meant to complement the existing tests, not to replace.
-
-### Certification Pipelines
-
-#### [vCloud](https://bosh-cpi-tmp.ci.cf-app.com/teams/pivotal/pipelines/certify-vcloud)
-
-* setting the vcloud certification pipeline
-
-  ```bash
-  fly -t cpi-tmp set-pipeline -p certify-vcloud -c ~/workspace/bosh-cpi-certification/vcloud/pipeline.yml --load-vars-from <( lpass show --note YOUR_CERTIFICATION_SECRETS)
-  fly -t cpi-tmp expose-pipeline -p certify-vcloud
-  ```
-
-#### [AWS](https://bosh-cpi-tmp.ci.cf-app.com/teams/pivotal/pipelines/certify-aws)
-
-* setting the vcloud certification pipeline
-
-  ```bash
-  fly -t cpi-tmp set-pipeline -p certify-aws -c ~/workspace/bosh-cpi-certification/aws/pipeline.yml --load-vars-from <( lpass show --note YOUR_CERTIFICATION_SECRETS)
-  fly -t cpi-tmp expose-pipeline -p certify-aws
-  ```
-
-
-# BOSH CPI Certification
 
 * What are we testing?
 	- BOSH CPI releases
@@ -35,7 +12,7 @@ tests. This is meant to complement the existing tests, not to replace.
 		1. [bosh-release](https://bosh.io/releases/github.com/cloudfoundry/bosh?all=1)
 		1. bosh-\<iaas\>-cpi-release
 		1. [stemcell](https://bosh.io/stemcells)
-        1. Every day at midnight. Why? Why not? Concourse will do the work ;)
+      1. Once a day.
 * How are we testing?
   - Testing for certification consists of the following test scenarios:
     1. [BATs](https://github.com/cloudfoundry/bosh-acceptance-tests/tree/gocli-bats) are run for every flavor of stemcells (ubuntu-trusty and centos-7)
@@ -44,8 +21,7 @@ tests. This is meant to complement the existing tests, not to replace.
 
 
 ## BATs - BOSH Acceptance Tests
-0. Set up infrastructure environment from scratch
-  - We use [Terraform resource](https://github.com/ljfranklin/terraform-resource) whenever and wherever we can. It works beautifully.
+0. Set up infrastructure environment from scratch. We use [Terraform resource](https://github.com/ljfranklin/terraform-resource) whenever and wherever we can. It works beautifully.
 0. Deploy BOSH director with latest bosh-release, IaaS-specific cpi-release, and stemcell
 0. Run BATs
 0. Tear down BOSH director
