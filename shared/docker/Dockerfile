@@ -45,9 +45,3 @@ RUN /bin/bash -l -c "                            \
   chruby 2.1.7 ;                                 \
   gem install bundler --no-ri --no-rdoc          \
 "
-
-# certification tool
-RUN cd /tmp && \
-    curl -o certify-artifacts -L https://s3.amazonaws.com/bosh-certification-generator-releases/certify-artifacts-linux-amd64 && \
-    chmod +x certify-artifacts && \
-    mv certify-artifacts /bin/certify-artifacts
