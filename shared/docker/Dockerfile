@@ -14,17 +14,20 @@ RUN apt-get update && \
     wget && \
     apt-get clean
 
+ENV RUBY_INSTALL_VERSION=0.6.1 CHRUBY_VERSION=0.3.9 RUBY_VERSION=2.1.7 JQ_VERSION=1.5
+
 # Import stedolan PGP key (jq)
 RUN wget -nv https://raw.githubusercontent.com/stedolan/jq/master/sig/jq-release.key && \
     gpg --import jq-release.key && \
     gpg --fingerprint 0x71523402 | grep 'Key fingerprint = 4FD7 01D6 FA9B 3D2D F5AC  935D AF19 040C 7152 3402' && \
     if [ "$?" != "0" ]; then echo "Invalid PGP key!"; exit 1; fi
 
+# Install jq
 RUN cd /tmp && \
-    wget -nv https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && \
-    wget -nv https://raw.githubusercontent.com/stedolan/jq/master/sig/v1.5/jq-linux64.asc && \
+    wget -nv https://github.com/stedolan/jq/releases/download/jq-$JQ_VERSION/jq-linux64 && \
+    wget -nv https://raw.githubusercontent.com/stedolan/jq/master/sig/v$JQ_VERSION/jq-linux64.asc && \
     gpg --verify jq-linux64.asc jq-linux64 && \
-    chmod 755 jq-linux64 && \
+    chmod +x jq-linux64 && \
     mv jq-linux64 /usr/local/bin/jq
 
 # Import Postmodern PGP key
@@ -32,8 +35,6 @@ RUN wget -nv https://raw.github.com/postmodern/postmodern.github.io/master/postm
     gpg --import postmodern.asc && \
     gpg --fingerprint 0xB9515E77 | grep 'Key fingerprint = 04B2 F3EA 6541 40BC C7DA  1B57 54C3 D9E9 B951 5E77' && \
     if [ "$?" != "0" ]; then echo "Invalid PGP key!"; exit 1; fi
-
-ENV RUBY_INSTALL_VERSION=0.6.1 CHRUBY_VERSION=0.3.9 RUBY_VERSION=2.1.7
 
 # Install chruby
 RUN cd /tmp && \
