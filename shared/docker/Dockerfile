@@ -6,7 +6,12 @@ ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ca-certificates wget make realpath openssh-client && \
+    apt-get install -y --no-install-recommends \
+    ca-certificates \
+    git \
+    make \
+    realpath \
+    wget && \
     apt-get clean
 
 # Import stedolan PGP key (jq)
