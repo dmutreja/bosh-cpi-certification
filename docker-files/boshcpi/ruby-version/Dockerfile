@@ -1,6 +1,6 @@
 FROM boshcpi/ruby-base:latest
 
-ENV RUBY_VERSION=2.1.7
+ARG RUBY_VERSION
 
 # Install Ruby
 RUN ruby-install ruby $RUBY_VERSION -- --disable-install-rdoc
