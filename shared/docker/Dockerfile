@@ -10,6 +10,7 @@ RUN apt-get update && \
     ca-certificates \
     git \
     make \
+    openssh-client \
     realpath \
     wget && \
     apt-get clean
