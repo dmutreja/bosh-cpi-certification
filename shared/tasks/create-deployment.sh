@@ -3,8 +3,6 @@
 set -e
 
 : ${INFRASTRUCTURE:?}
-: ${DEPLOYMENT_NAME:?}
-: ${RELEASE_NAME:?}
 : ${STEMCELL_NAME:?}
 
 source pipelines/shared/utils.sh
@@ -15,8 +13,6 @@ if [ -n "${VCENTER_NETWORK_NAME}" ]; then
 fi
 
 bosh2 int pipelines/shared/assets/certification-release/certification.yml \
-  -v "deployment_name=${DEPLOYMENT_NAME}" \
-  -v "release_name=${RELEASE_NAME}" \
   -v "stemcell_name=${STEMCELL_NAME}" \
   $(echo ${vsphere_vars}) \
   -l environment/metadata > /tmp/deployment.yml
@@ -24,7 +20,7 @@ bosh2 int pipelines/shared/assets/certification-release/certification.yml \
 source director-state/director.env
 
 pushd pipelines/shared/assets/certification-release
-  time bosh2 -n create-release --force --name ${RELEASE_NAME}
+  time bosh2 -n create-release --force
   time bosh2 -n upload-release
 popd
 
@@ -34,4 +30,4 @@ time bosh2 -n update-cloud-config \
   $(echo ${vsphere_vars}) \
   pipelines/shared/assets/certification-release/cloud-config.yml
 time bosh2 -n upload-stemcell $( realpath stemcell/*.tgz )
-time bosh2 -n deploy -d ${DEPLOYMENT_NAME} /tmp/deployment.yml
+time bosh2 -n deploy -d certification /tmp/deployment.yml

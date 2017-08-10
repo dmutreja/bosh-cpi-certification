@@ -1,8 +1,8 @@
 ---
-name: ((deployment_name))
+name: certification
 
 releases:
-  - name: ((release_name))
+  - name: certification
     version: latest
 
 stemcells:

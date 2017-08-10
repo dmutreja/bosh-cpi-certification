@@ -18,6 +18,3 @@ outputs:
 
 run:
   path: pipelines/shared/tasks/test-upgrade.sh
-
-params:
-  DEPLOYMENT_NAME: certification

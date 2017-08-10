@@ -6,8 +6,6 @@ source pipelines/shared/utils.sh
 source /etc/profile.d/chruby.sh
 chruby 2.1.7
 
-: ${DEPLOYMENT_NAME:?}
-
 # outputs
 output_dir=$(realpath new-director-state/)
 
@@ -42,4 +40,4 @@ pushd ${output_dir} > /dev/null
 popd > /dev/null
 
 echo "recreating existing BOSH Deployment..."
-time bosh2 -n -d ${DEPLOYMENT_NAME} recreate
+time bosh2 -n -d certification recreate

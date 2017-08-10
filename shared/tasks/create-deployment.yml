@@ -17,6 +17,4 @@ run:
 params:
   VCENTER_NETWORK_NAME: ""
   INFRASTRUCTURE:       ""
-  DEPLOYMENT_NAME:      certification
-  RELEASE_NAME:         certification
   STEMCELL_NAME:        ""
