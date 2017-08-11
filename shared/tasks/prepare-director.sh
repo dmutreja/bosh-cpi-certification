@@ -11,7 +11,7 @@ metadata="$( cat environment/metadata )"
 
 bosh2 int \
   -o bosh-deployment/${INFRASTRUCTURE}/cpi.yml \
-  -o bosh-deployment/misc/powerdns.yml \
+  -o bosh-deployment/local-dns.yml \
   -o bosh-deployment/jumpbox-user.yml \
   -o pipelines/shared/assets/ops/custom-releases.yml \
   -o pipelines/${INFRASTRUCTURE}/assets/ops/custom-cpi-release.yml \
