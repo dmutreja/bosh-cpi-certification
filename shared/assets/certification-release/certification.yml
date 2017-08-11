@@ -27,4 +27,4 @@ instance_groups:
         default: [dns, gateway]
     jobs:
       - name: simple
-        release: ((release_name))
+        release: certification
