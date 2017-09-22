@@ -1,0 +1,4 @@
+fly -t cpi sp -p certify-vsphere \
+  -c $VSPHERE_DIR/pipeline.yml \
+  -l <(lpass show --note 'certify vsphere cpi secrets') \
+  -v old_bosh_release_version=$OLD_BOSH_RELEASE_VERSION

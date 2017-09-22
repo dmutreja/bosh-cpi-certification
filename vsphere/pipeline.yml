@@ -105,8 +105,8 @@ jobs:
         - {get: bosh-cli,         tags: [vsphere-v6.0], trigger: false}
         - {get: centos-stemcell,  tags: [vsphere-v6.0], trigger: false} # pass-through
         - {get: old-stemcell,     tags: [vsphere-v6.0], trigger: false}
-        - {get: old-bosh-release, tags: [vsphere-v6.0], trigger: false, version: {version: "255.4"}, resource: bosh-release}
-        - {get: old-cpi-release,  tags: [vsphere-v6.0], trigger: false, version: {version: "14"},  resource: cpi-release}
+        - {get: old-bosh-release, tags: [vsphere-v6.0], trigger: false, version: {version: {{old_bosh_release_version}}}, resource: bosh-release}
+        - {get: old-cpi-release,  tags: [vsphere-v6.0], trigger: false, version: {version: {{old_cpi_release_version}}},  resource: cpi-release}
         - {get: bosh-deployment,  tags: [vsphere-v6.0], trigger: false}
       - {put: environment, tags: [vsphere-v6.0], params: {acquire: true}}
       - <<: *prepare-director
