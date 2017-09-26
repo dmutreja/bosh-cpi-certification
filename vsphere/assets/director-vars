@@ -3,5 +3,5 @@
 exec jq '{
   "internal_cidr": .network1.vCenterCIDR,
   "internal_gw": .network1.vCenterGateway,
-  "external_ip": .directorIP
+  "internal_ip": .directorIP
 }' < environment/metadata
