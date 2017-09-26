@@ -11,7 +11,7 @@ metadata="$( cat environment/metadata )"
 
 bosh2 int \
   -o bosh-deployment/${INFRASTRUCTURE}/cpi.yml \
-  -o bosh-deployment/misc/powerdns.yml \
+  -o bosh-deployment/local-dns.yml \
   -o bosh-deployment/jumpbox-user.yml \
   -o pipelines/shared/assets/ops/custom-releases.yml \
   -o pipelines/${INFRASTRUCTURE}/assets/ops/custom-cpi-release.yml \
@@ -21,6 +21,11 @@ bosh2 int \
   -v stemcell_uri="file://$(echo stemcell/*.tgz)" \
   -v director_name=bosh \
   -l <( echo "${DIRECTOR_VARS_FILE}" ) \
+  ( \
+    if [[ -e pipelines/${INFRASTRUCTURE}/assets/director-vars ]]; then \
+      -l <( pipelines/${INFRASTRUCTURE}/assets/director-vars $metadata ) \
+    fi \
+  ) \
   bosh-deployment/bosh.yml > /tmp/director.yml
 
 bosh2 int \

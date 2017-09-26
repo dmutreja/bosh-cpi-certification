@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+exec jq '{
+  "internal_cidr": .network1.vCenterCIDR,
+  "internal_gw": .network1.vCenterGateway,
+  "external_ip": .directorIP
+}' \
+  < $1
