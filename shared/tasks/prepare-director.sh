@@ -9,6 +9,11 @@ source pipelines/shared/utils.sh
 
 metadata="$( cat environment/metadata )"
 
+additional_director_vars=""
+if [[ -e pipelines/${INFRASTRUCTURE}/assets/director-vars ]]; then \
+  additional_director_vars"-l <( pipelines/${INFRASTRUCTURE}/assets/director-vars environment/metadata )"
+fi
+
 bosh2 int \
   -o bosh-deployment/${INFRASTRUCTURE}/cpi.yml \
   -o bosh-deployment/local-dns.yml \
@@ -21,11 +26,7 @@ bosh2 int \
   -v stemcell_uri="file://$(echo stemcell/*.tgz)" \
   -v director_name=bosh \
   -l <( echo "${DIRECTOR_VARS_FILE}" ) \
-  ( \
-    if [[ -e pipelines/${INFRASTRUCTURE}/assets/director-vars ]]; then \
-      -l <( pipelines/${INFRASTRUCTURE}/assets/director-vars $metadata ) \
-    fi \
-  ) \
+  $(echo ${additional_director_vars}) \
   bosh-deployment/bosh.yml > /tmp/director.yml
 
 bosh2 int \
