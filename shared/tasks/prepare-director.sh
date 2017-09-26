@@ -11,7 +11,7 @@ metadata="$( cat environment/metadata )"
 
 additional_director_vars=""
 if [[ -e pipelines/${INFRASTRUCTURE}/assets/director-vars ]]; then \
-  additional_director_vars"-l <( pipelines/${INFRASTRUCTURE}/assets/director-vars environment/metadata )"
+  additional_director_vars="-l <( pipelines/${INFRASTRUCTURE}/assets/director-vars environment/metadata )"
 fi
 
 bosh2 int \
