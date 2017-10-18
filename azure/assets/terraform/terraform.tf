@@ -62,10 +62,11 @@ resource "azurerm_subnet" "azure_bats_subnet_2" {
 
 # Create a Storage Account in the azure_rg_bosh resouce group
 resource "azurerm_storage_account" "azure_bosh_sa" {
-  name                = "${replace(var.env_name, "-", "")}"
-  resource_group_name = "${azurerm_resource_group.azure_rg_bosh.name}"
-  location            = "${var.location}"
-  account_type        = "Standard_LRS"
+  name                     = "${replace(var.env_name, "-", "")}"
+  resource_group_name      = "${azurerm_resource_group.azure_rg_bosh.name}"
+  location                 = "${var.location}"
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
 }
 # Create a Storage Container for the bosh director
 resource "azurerm_storage_container" "azure_bosh_container" {
