@@ -17,6 +17,11 @@ variable "environments" {
     AzureChinaCloud   = "china"
   }
 }
+variable "resource_group_prefix" {
+  type    = "string"
+  default = ""
+}
+
 
 # Configure the Microsoft Azure Provider
 provider "azurerm" {
@@ -29,7 +34,7 @@ provider "azurerm" {
 }
 # Create a resource group
 resource "azurerm_resource_group" "azure_rg_bosh" {
-  name     = "${var.env_name}-rg"
+  name     = "${var.resource_group_prefix}${var.env_name}-rg"
   location = "${var.location}"
 }
 # Create a virtual network in the azure_rg_bosh resource group
