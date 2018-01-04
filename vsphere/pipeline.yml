@@ -41,7 +41,7 @@ shared:
   - &test-stemcell
     task: test-stemcell
     tags: [vsphere-v6.5]
-    file: bosh-linux-stemcell-builder/ci/tasks/test-stemcell.yml
+    file: pipelines/shared/tasks/test-stemcell.yml
     params:
       BOSH_os_name: ubuntu-trusty
       package: ipv4director

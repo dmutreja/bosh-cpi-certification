@@ -63,6 +63,3 @@ export BOSH_CA_CERT="$( creds_path /director_ssl/ca )"
 export BOSH_GW_HOST="${BOSH_ENVIRONMENT}"
 export BOSH_GW_USER="jumpbox"
 EOF
-
-# (cdutra, lsantos): used by `test-stemcell`
-cp "${output_dir}/creds.yml" "${output_dir}/director-creds.yml"
