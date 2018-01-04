@@ -4,6 +4,7 @@ groups:
     jobs:
       - bats-centos
       - bats-ubuntu
+      - test-stemcell
       - end2end-us
       - test-upgrade
       - certify-centos
@@ -33,6 +34,13 @@ shared:
       BAT_NETWORKING:     manual
       BAT_RSPEC_FLAGS:    "--tag ~multiple_manual_networks --tag ~root_partition"
 
+  - &test-stemcell
+    task: test-stemcell
+    file: bosh-linux-stemcell-builder/ci/tasks/test-stemcell.yml
+    params:
+      BOSH_os_name: ubuntu-trusty
+      package: ipv4director
+
   - &run-end-2-end
     task: run-e2e
     file: bosh-cpi-src/ci/tasks/run-e2e.yml
@@ -58,6 +66,40 @@ shared:
     file: pipelines/shared/tasks/teardown.yml
 
 jobs:
+  - name: test-stemcell
+    serial: true
+    plan:
+      - aggregate:
+        - {get: bosh-release,    trigger: true}
+        - {get: cpi-release,     trigger: true}
+        - {get: stemcell,        trigger: true, resource: ubuntu-stemcell}
+        - {get: after-midnight,  trigger: true}
+        - {get: pipelines,       trigger: false}
+        - {get: bosh-cli,        trigger: false}
+        - {get: bats,            trigger: false}
+        - {get: bosh-deployment, trigger: false}
+        - {get: syslog-release,  trigger: false}
+        - {get: os-conf-release, trigger: false}
+        - {get: bosh-linux-stemcell-builder, trigger: false}
+      - <<: *create-environment
+      - do:
+        - <<: *prepare-director
+          params:
+            <<: *prepare-director-params
+            OPTIONAL_OPS_FILE:  |
+              -o pipelines/shared/assets/ops/remove-hm.yml
+              -o bosh-deployment/external-ip-with-registry-not-recommended.yml
+              -o pipelines/shared/assets/ops/remove-provider-cert.yml
+        - do:
+          - <<: *deploy-director
+          - <<: *test-stemcell
+          ensure:
+            do:
+              - <<: *teardown
+        ensure:
+          do:
+            - <<: *destroy-environment
+
   - name: end2end-us
     serial: true
     plan:
@@ -258,7 +300,7 @@ jobs:
       - aggregate:
         - {get: bosh-release, trigger: true, passed: [bats-ubuntu, end2end-us]}
         - {get: cpi-release,  trigger: true, passed: [bats-ubuntu, end2end-us]}
-        - {get: stemcell,     trigger: true, passed: [bats-ubuntu, end2end-us, test-upgrade], resource: ubuntu-stemcell}
+        - {get: stemcell,     trigger: true, passed: [bats-ubuntu, end2end-us, test-upgrade, test-stemcell], resource: ubuntu-stemcell}
         - {get: pipelines,    trigger: false}
       - task: generate
         file: pipelines/shared/tasks/generate-receipt.yml
@@ -354,3 +396,16 @@ resources:
         secret_key: {{AWS_SECRET_KEY}}
         region:     {{AWS_REGION_NAME}}
         public_key: {{PUBLIC_KEY}}
+  - name: bosh-linux-stemcell-builder
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-linux-stemcell-builder
+      branch: master
+  - name: syslog-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/syslog-release
+  - name: os-conf-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/os-conf-release
