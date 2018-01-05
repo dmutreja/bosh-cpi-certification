@@ -7,8 +7,6 @@ set -e
 
 source pipelines/shared/utils.sh
 
-metadata="$( cat environment/metadata )"
-
 bosh int \
   -o bosh-deployment/${INFRASTRUCTURE}/cpi.yml \
   -o bosh-deployment/misc/powerdns.yml \
@@ -22,8 +20,4 @@ bosh int \
   -v director_name=bosh \
   -l <( echo "${DIRECTOR_VARS_FILE}" ) \
   -l <( pipelines/${INFRASTRUCTURE}/assets/director-vars ) \
-  bosh-deployment/bosh.yml > /tmp/director.yml
-
-bosh int \
-  -l environment/metadata \
-  /tmp/director.yml > director-config/director.yml
+  bosh-deployment/bosh.yml > director-config/director.yml

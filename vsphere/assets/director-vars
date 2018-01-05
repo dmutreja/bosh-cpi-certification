@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-exec jq '{
+exec jq '. + {
   "internal_cidr": .network1.vCenterCIDR,
   "internal_gw": .network1.vCenterGateway,
   "internal_ip": .directorIP,

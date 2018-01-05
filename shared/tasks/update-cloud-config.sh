@@ -9,6 +9,6 @@ source pipelines/shared/utils.sh
 source director-state/director.env
 
 bosh -n update-cloud-config bosh-deployment/$INFRASTRUCTURE/cloud-config.yml \
-  -l environment/metadata \
+  -l <( pipelines/${INFRASTRUCTURE}/assets/director-vars ) \
   -l <( echo "$DIRECTOR_VARS_FILE" ) \
   $( echo ${OPTIONAL_OPS_FILE} )
