@@ -5,6 +5,7 @@ exec jq '{
   "internal_gw": .network1.vCenterGateway,
   "internal_ip": .directorIP,
   "dns_recursor_ip": .DNS,
+  "reserved_range": .reservedRange,
   "second_internal_cidr": .network1IPv6.vCenterCIDR,
   "second_internal_gw": .network1IPv6.vCenterGateway,
   "second_internal_ip": .network1IPv6["staticIP-1"]
