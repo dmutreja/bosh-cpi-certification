@@ -4,5 +4,8 @@ exec jq '{
   "internal_cidr": .network1.vCenterCIDR,
   "internal_gw": .network1.vCenterGateway,
   "internal_ip": .directorIP,
-  "dns_recursor_ip": .DNS
+  "dns_recursor_ip": .DNS,
+  "second_internal_cidr": .network1IPv6.vCenterCIDR,
+  "second_internal_gw": .network1IPv6.vCenterGateway,
+  "second_internal_ip": .network1IPv6["staticIP-1"]
 }' < environment/metadata

@@ -1,4 +1,10 @@
 - type: replace
+  path: /azs/name=default/cloud_properties
+  value:
+    datacenters:
+    - clusters: [((vcenter_cluster)): {}]
+
+- type: replace
   path: /vm_types/name=default/cloud_properties
   value:
     cpu: 2

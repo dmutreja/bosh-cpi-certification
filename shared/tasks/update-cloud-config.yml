@@ -1,0 +1,19 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source: {repository: bosh/main}
+
+inputs:
+- name: pipelines
+- name: bosh-cli
+- name: environment
+- name: director-state
+
+params:
+  DIRECTOR_VARS_FILE: ""
+  INFRASTRUCTURE:     ""
+  OPTIONAL_OPS_FILE:  ""
+
+run:
+  path: pipelines/shared/tasks/test-stemcell.sh
