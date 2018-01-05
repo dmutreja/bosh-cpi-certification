@@ -97,6 +97,10 @@ jobs:
           - do:
               - <<: *deploy-director
               - <<: *update-cloud-config
+                params:
+                  <<: *update-cloud-config-params
+                  OPTIONAL_OPS_FILE: |
+                    -o pipelines/vsphere/assets/reserve-ips.yml
               - <<: *test-stemcell
             ensure:
               do:
