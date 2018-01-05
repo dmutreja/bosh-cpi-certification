@@ -9,7 +9,7 @@ source pipelines/shared/utils.sh
 
 metadata="$( cat environment/metadata )"
 
-bosh2 int \
+bosh int \
   -o bosh-deployment/${INFRASTRUCTURE}/cpi.yml \
   -o bosh-deployment/misc/powerdns.yml \
   -o bosh-deployment/jumpbox-user.yml \
@@ -24,6 +24,6 @@ bosh2 int \
   -l <( pipelines/${INFRASTRUCTURE}/assets/director-vars ) \
   bosh-deployment/bosh.yml > /tmp/director.yml
 
-bosh2 int \
+bosh int \
   -l environment/metadata \
   /tmp/director.yml > director-config/director.yml

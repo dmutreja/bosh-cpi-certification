@@ -42,7 +42,7 @@ pushd ${output_dir} > /dev/null
   echo "deploying BOSH..."
 
   set +e
-  BOSH_LOG_PATH=$logfile bosh2 create-env \
+  BOSH_LOG_PATH=$logfile bosh create-env \
     --vars-store "${output_dir}/creds.yml" \
     director.yml
   bosh_cli_exit_code="$?"
