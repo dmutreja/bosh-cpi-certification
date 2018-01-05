@@ -41,6 +41,13 @@ shared:
       BOSH_os_name: ubuntu-trusty
       package: ipv4director
 
+  - &update-cloud-config
+    task: update-cloud-config
+    file: pipelines/shared/tasks/update-cloud-config.yml
+    params: &update-cloud-config-params
+      INFRASTRUCTURE: aws
+      DIRECTOR_VARS_FILE: {{aws_director_vars_file}}
+
   - &run-end-2-end
     task: run-e2e
     file: bosh-cpi-src/ci/tasks/run-e2e.yml
@@ -86,12 +93,13 @@ jobs:
         - <<: *prepare-director
           params:
             <<: *prepare-director-params
-            OPTIONAL_OPS_FILE:  |
+            OPTIONAL_OPS_FILE: |
               -o pipelines/shared/assets/ops/remove-hm.yml
               -o bosh-deployment/external-ip-with-registry-not-recommended.yml
               -o pipelines/shared/assets/ops/remove-provider-cert.yml
         - do:
           - <<: *deploy-director
+          - <<: *update-cloud-config
           - <<: *test-stemcell
           ensure:
             do:
