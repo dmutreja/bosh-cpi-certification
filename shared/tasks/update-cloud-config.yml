@@ -16,4 +16,4 @@ params:
   OPTIONAL_OPS_FILE:  ""
 
 run:
-  path: pipelines/shared/tasks/test-stemcell.sh
+  path: pipelines/shared/tasks/update-cloud-config.sh
