@@ -35,10 +35,17 @@ shared:
 
   - &test-stemcell
     task: test-stemcell
-    file: bosh-linux-stemcell-builder/ci/tasks/test-stemcell.yml
+    file: pipelines/shared/tasks/test-stemcell.yml
     params:
       BOSH_os_name: ubuntu-trusty
       package: ipv4director
+
+  - &update-cloud-config
+    task: update-cloud-config
+    file: pipelines/shared/tasks/update-cloud-config.yml
+    params: &update-cloud-config-params
+      INFRASTRUCTURE: azure
+      DIRECTOR_VARS_FILE: {{azure_director_vars_file}}
 
   - &teardown
     task: teardown
@@ -86,6 +93,7 @@ jobs:
               -o bosh-deployment/external-ip-with-registry-not-recommended.yml
         - do:
           - <<: *deploy-director
+          - <<: *update-cloud-config
           - <<: *test-stemcell
           ensure:
             do:
