@@ -28,10 +28,5 @@ pushd pipelines/shared/assets/certification-release
   time bosh -n upload-release
 popd
 
-time bosh -n update-cloud-config \
-  -o pipelines/${INFRASTRUCTURE}/assets/certification/cloud-config-ops.yml \
-  -l environment/metadata \
-  $(echo ${vsphere_vars}) \
-  pipelines/shared/assets/certification-release/cloud-config.yml
 time bosh -n upload-stemcell $( realpath stemcell/*.tgz )
 time bosh -n deploy -d ${DEPLOYMENT_NAME} /tmp/deployment.yml
