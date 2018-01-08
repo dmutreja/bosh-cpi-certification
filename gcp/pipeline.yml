@@ -86,9 +86,6 @@ jobs:
         - <<: *prepare-director
           params:
             <<: *prepare-director-params
-            OPTIONAL_OPS_FILE: |
-              -o bosh-deployment/azure/custom-environment.yml
-              -o bosh-deployment/external-ip-with-registry-not-recommended.yml
         - do:
           - <<: *deploy-director
           - <<: *update-cloud-config
@@ -185,6 +182,7 @@ jobs:
               stemcell:     old-stemcell
               bosh-release: old-bosh-release
               cpi-release:  old-cpi-release
+          - <<: *update-cloud-config
           - task: create-deployment
             file: pipelines/shared/tasks/create-deployment.yml
             input_mapping:

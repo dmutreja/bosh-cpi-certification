@@ -193,6 +193,7 @@ jobs:
               stemcell:     old-stemcell
               bosh-release: old-bosh-release
               cpi-release:  old-cpi-release
+          - <<: *update-cloud-config
           - task: create-deployment
             file: pipelines/shared/tasks/create-deployment.yml
             input_mapping:
