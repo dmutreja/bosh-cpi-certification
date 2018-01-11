@@ -175,6 +175,9 @@ output "resource_group_name" {
 output "storage_account_name" {
   value = "${azurerm_storage_account.azure_bosh_sa.name}"
 }
+output "security_group" {
+  value = "${azurerm_network_security_group.azure_bosh_nsg.name}"
+}
 output "default_security_group" {
   value = "${azurerm_network_security_group.azure_bosh_nsg.name}"
 }

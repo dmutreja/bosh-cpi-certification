@@ -1,6 +1,6 @@
 ---
 groups:
-  - name: certify-azure
+  - name: ((group_name))
     jobs:
       - bats-centos
       - bats-ubuntu
@@ -15,11 +15,13 @@ shared:
     file: pipelines/shared/tasks/prepare-director.yml
     params: &prepare-director-params
       INFRASTRUCTURE:     azure
-      DIRECTOR_VARS_FILE: {{azure_director_vars_file}}
+      DIRECTOR_VARS_FILE: ((azure_director_vars_file))
       OPTIONAL_OPS_FILE: |
         -o bosh-deployment/azure/custom-environment.yml
+        -o bosh-deployment/azure/use-managed-disks.yml
         -o bosh-deployment/external-ip-with-registry-not-recommended.yml
         -o pipelines/shared/assets/ops/remove-provider-cert.yml
+        -o pipelines/shared/assets/ops/remove-hm.yml
 
   - &deploy-director
     task: deploy-director
@@ -45,7 +47,7 @@ shared:
     file: pipelines/shared/tasks/update-cloud-config.yml
     params: &update-cloud-config-params
       INFRASTRUCTURE: azure
-      DIRECTOR_VARS_FILE: {{azure_director_vars_file}}
+      DIRECTOR_VARS_FILE: ((azure_director_vars_file))
 
   - &teardown
     task: teardown
@@ -86,11 +88,6 @@ jobs:
       - <<: *create-environment
       - do:
         - <<: *prepare-director
-          params:
-            <<: *prepare-director-params
-            OPTIONAL_OPS_FILE: |
-              -o bosh-deployment/azure/custom-environment.yml
-              -o bosh-deployment/external-ip-with-registry-not-recommended.yml
         - do:
           - <<: *deploy-director
           - <<: *update-cloud-config
@@ -142,11 +139,6 @@ jobs:
         - {get: bosh-deployment, trigger: false}
       - <<: *create-environment
       - <<: *prepare-director
-        params:
-          <<: *prepare-director-params
-          OPTIONAL_OPS_FILE: |
-            -o bosh-deployment/azure/custom-environment.yml
-            -o bosh-deployment/external-ip-with-registry-not-recommended.yml
       - do:
           - <<: *deploy-director
           - <<: *run-bats
@@ -171,8 +163,8 @@ jobs:
         - {get: bosh-cli,         trigger: false}
         - {get: centos-stemcell,  trigger: false} # pass-through
         - {get: old-stemcell,     trigger: false, version: {version: "3363.14"}}
-        - {get: old-bosh-release, trigger: false, version: {version: {{old_bosh_release_version}}}, resource: bosh-release}
-        - {get: old-cpi-release,  trigger: false, version: {version: "23"},  resource: cpi-release}
+        - {get: old-bosh-release, trigger: false, version: {version: ((old_bosh_release_version))}, resource: bosh-release}
+        - {get: old-cpi-release,  trigger: false, version: {version: "24"},  resource: cpi-release}
         - {get: bosh-deployment,  trigger: false}
       - <<: *create-environment
       - <<: *prepare-director
@@ -185,8 +177,10 @@ jobs:
           OPTIONAL_OPS_FILE: |
             -o pipelines/shared/assets/ops/redis.yml
             -o bosh-deployment/azure/custom-environment.yml
+            -o bosh-deployment/azure/use-managed-disks.yml
             -o bosh-deployment/external-ip-with-registry-not-recommended.yml
             -o pipelines/shared/assets/ops/remove-provider-cert.yml
+            -o pipelines/shared/assets/ops/remove-hm.yml
       - do:
           - <<: *deploy-director
             input_mapping:
@@ -285,11 +279,11 @@ resources:
   - name: receipt
     type: s3
     source:
-      access_key_id: {{certification__bucket_access_key}}
-      secret_access_key: {{certification__bucket_secret_key}}
-      bucket: {{certification__bucket}}
+      access_key_id: ((certification__bucket_access_key))
+      secret_access_key: ((certification__bucket_secret_key))
+      bucket: ((certification__bucket))
       regexp: .*-(\d+)-receipt\.json
-      region_name: {{certification__bucket_region}}
+      region_name: ((certification__bucket_region))
   - name: cpi-release
     type: bosh-io-release
     source:
@@ -310,17 +304,18 @@ resources:
     type: terraform_type
     source:
       storage:
-        access_key_id: {{terraform_bucket_access_key_id}}
-        secret_access_key: {{terraform_bucket_secret_access_key}}
-        bucket: {{terraform_bucket}}
-        region_name: {{terraform_bucket_region}}
-        bucket_path: {{terraform_bucket_path}}
+        access_key_id: ((terraform_bucket_access_key_id))
+        secret_access_key: ((terraform_bucket_secret_access_key))
+        bucket: ((terraform_bucket))
+        region_name: ((terraform_bucket_region))
+        bucket_path: ((terraform_bucket_path))
       vars:
-        azure_client_id: {{azure_client_id}}
-        azure_client_secret: {{azure_client_secret}}
-        azure_subscription_id: {{azure_subscription_id}}
-        azure_tenant_id: {{azure_tenant_id}}
-        location: West US
+        azure_client_id: ((azure_client_id))
+        azure_client_secret: ((azure_client_secret))
+        azure_environment: ((azure_environment))
+        azure_subscription_id: ((azure_subscription_id))
+        azure_tenant_id: ((azure_tenant_id))
+        location: ((azure_location))
   - name: bosh-linux-stemcell-builder
     type: git
     source:
