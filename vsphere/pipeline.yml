@@ -105,7 +105,9 @@ jobs:
           ensure:
             do:
               - <<: *teardown
-              - {put: environment, tags: [vsphere-v6.5], params: {release: environment}}
+        ensure:
+          do:
+            - {put: environment, tags: [vsphere-v6.5], params: {release: environment}}
 
   - name: test-stemcell-ipv6
     serial: true
@@ -136,7 +138,9 @@ jobs:
           ensure:
             do:
               - <<: *teardown
-              - {put: environment, tags: [vsphere-v6.5], params: {release: environment}}
+        ensure:
+          do:
+            - {put: environment, tags: [vsphere-v6.5], params: {release: environment}}
 
   - name: bats-centos
     serial: true
