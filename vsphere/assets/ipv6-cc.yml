@@ -8,7 +8,7 @@
       cloud_properties:
         name: ((network_name))
       dns: ((DNS))]
-      gateway: ((.network1IPv6.vCenterGateway))
-      range: ((.network1IPv6.vCenterCIDR))
+      gateway: ((second_internal_gw))
+      range: ((second_internal_cidr))
       reserved: []
     type: manual
