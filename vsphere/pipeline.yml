@@ -32,7 +32,7 @@ shared:
         -o bosh-deployment/vsphere/resource-pool.yml
         -o pipelines/shared/assets/ops/remove-hm.yml
         -o bosh-deployment/misc/ipv6/bosh.yml
-        -o bosh-linux-stemcell-builder/ci/assets/ipv6-director.yml
+        -o pipelines/vsphere/assets/ipv6-director.yml
         -o bosh-deployment/misc/second-network.yml
         -o bosh-deployment/vsphere/second-network.yml
 
@@ -107,21 +107,21 @@ jobs:
                 - <<: *teardown
                 - {put: environment, tags: [vsphere-v6.5], params: {release: environment}}
         # TODO(cdutra,lsantos): We don't have ipv6 configured on vsphere yet
-        # - do:
-        #   - {put: environment, tags: [vsphere-v6.5], params: {acquire: true}}
-        #   - <<: *prepare-director-ipv6
-        #   - do:
-        #       - <<: *deploy-director
-        #       - <<: *update-cloud-config
-        #         params:
-        #           <<: *update-cloud-config-params
-        #           OPTIONAL_OPS_FILE: |
-        #             -o pipelines/vsphere/assets/ipv6-cc.yml
-        #       - <<: *test-stemcell
-        #     ensure:
-        #       do:
-        #         - <<: *teardown
-        #         - {put: environment, tags: [vsphere-v6.5], params: {release: environment}}
+        - do:
+          - {put: environment, tags: [vsphere-v6.5], params: {acquire: true}}
+          - <<: *prepare-director-ipv6
+          - do:
+              - <<: *deploy-director
+              - <<: *update-cloud-config
+                params:
+                  <<: *update-cloud-config-params
+                  OPTIONAL_OPS_FILE: |
+                    -o pipelines/vsphere/assets/ipv6-cc.yml
+              - <<: *test-stemcell
+            ensure:
+              do:
+                - <<: *teardown
+                - {put: environment, tags: [vsphere-v6.5], params: {release: environment}}
 
 
   - name: bats-centos
