@@ -7,7 +7,7 @@
     - azs: [default]
       cloud_properties:
         name: ((network_name))
-      dns: ((DNS))]
+      dns: [((DNS))]
       gateway: ((second_internal_gw))
       range: ((second_internal_cidr))
       reserved: []
