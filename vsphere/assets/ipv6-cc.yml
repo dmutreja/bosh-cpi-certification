@@ -4,7 +4,7 @@
   value:
     name: ipv6
     subnets:
-    - azs: [default]
+    - azs: [z1, z2, z3]
       cloud_properties:
         name: ((network_name))
       dns: [((DNS))]
