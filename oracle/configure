@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -e
+  lpass status
+set +e
+
+fly -t cpi sp -p certify-oracle \
+  -c $ORACLE_DIR/pipeline.yml \
+  -l <(lpass show --note 'certify oracle cpi secrets')
