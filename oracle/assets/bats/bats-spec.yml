@@ -1,0 +1,30 @@
+---
+cpi: oci
+properties:
+  stemcell:
+    name: light-oracle-ubuntu-trusty
+    version: latest
+  instances: 1
+  instance_shape: 'VM.Standard1.2'
+  availability_domain: ((ad))
+  networks:
+  - name: default
+    type: manual
+    static_ip: ((bats_subnet1_static_ip))
+    cloud_properties:
+      vcn: ((vcn))
+      subnet: ((bats_subnet1_name))
+    cidr: ((bats_subnet1_cidr))
+    reserved: ((bats_subnet1_reserved))
+    static: ((bats_subnet1_static))
+    gateway: ((bats_subnet1_gw))
+  - name: second
+    type: manual
+    static_ip: ((bats_subnet2_static_ip))
+    cloud_properties:
+      vcn:  ((vcn))
+      subnet: ((bats_subnet2_name))
+    cidr: ((bats_subnet2_cidr))
+    reserved: ((bats_subnet2_reserved))
+    static: ((bats_subnet2_static))
+    gateway: ((bats_subnet2_gw))

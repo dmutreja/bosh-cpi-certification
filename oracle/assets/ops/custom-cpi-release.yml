@@ -1,0 +1,5 @@
+- type: replace
+  path: /releases/name=bosh-oracle-cpi
+  value:
+    name: bosh-oracle-cpi
+    url: ((cpi_release_uri))
