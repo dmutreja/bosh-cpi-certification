@@ -1,0 +1,235 @@
+---
+groups:
+  - name: certify-oracle
+    jobs:
+      - bats-ubuntu
+      - test-stemcell
+      - certify-ubuntu
+
+shared:
+  - &prepare-director
+    task: prepare-director
+    file: pipelines/shared/tasks/prepare-director.yml
+    params: &prepare-director-params
+      INFRASTRUCTURE:     oracle
+      DIRECTOR_VARS_FILE: ((oracle_director_vars_file))
+      OPTIONAL_OPS_FILE: |
+        -o pipelines/oracle/ops/replace-default-network-with-public.yml
+        -o pipelines/oracle/ops/use-public-ip-for-ssh.yml
+
+  - &deploy-director
+    task: deploy-director
+    file: pipelines/shared/tasks/deploy-director.yml
+
+  - &run-bats
+    task: run-bats
+    file: pipelines/shared/tasks/run-bats.yml
+    params: &run-bats-params
+      INFRASTRUCTURE:     oracle
+      BAT_INFRASTRUCTURE: oci
+      BAT_NETWORKING:     manual
+
+  - &test-stemcell
+    task: test-stemcell
+    file: pipelines/shared/tasks/test-stemcell.yml
+    params:
+      BOSH_os_name: ubuntu-trusty
+      package: ipv4director
+
+  - &update-cloud-config
+    task: update-cloud-config
+    file: pipelines/shared/tasks/update-cloud-config.yml
+    params: &update-cloud-config-params
+      INFRASTRUCTURE: oracle
+      DIRECTOR_VARS_FILE: ((oracle_director_vars_file))
+
+  - &teardown
+    task: teardown
+    file: pipelines/shared/tasks/teardown.yml
+
+  - &environment-vars
+    task: prepare-terraform-vars
+    file: pipelines/oracle/tasks/prepare-terraform-vars.yml
+    params:
+      oracle_apikey: ((oracle-apikey.private_key))
+
+  - &create-environment
+    put: environment
+    params:
+      terraform_source: pipelines/oracle/assets/terraform
+      generate_random_name: true
+      var_files: [terraform-vars/oci.vars]
+      plugin_dir: /.terraform.d/plugins/linux_amd64
+
+  - &destroy-environment
+    put: environment
+    params:
+      action: destroy
+      env_name_file: environment/name
+      terraform_source: pipelines/oracle/assets/terraform
+      var_files: [terraform-env/oci.vars]
+      plugin_dir: /.terraform.d/plugins/linux_amd64
+    get_params:
+      action: destroy
+
+jobs:
+  - name: test-stemcell
+    serial: true
+    plan:
+      - aggregate:
+        - {get: bosh-release,    trigger: true}
+        - {get: cpi-release,     trigger: true}
+        - {get: stemcell,        trigger: true, resource: ubuntu-stemcell}
+        - {get: after-midnight,  trigger: true}
+        - {get: pipelines,       trigger: false}
+        - {get: bosh-cli,        trigger: false}
+        - {get: bats,            trigger: false}
+        - {get: bosh-deployment, trigger: false}
+        - {get: syslog-release,  trigger: false}
+        - {get: os-conf-release, trigger: false}
+        - {get: bosh-linux-stemcell-builder, trigger: false}
+      - <<: *environment-vars
+      - <<: *create-environment
+      - do:
+        - <<: *prepare-director
+          params:
+            <<: *prepare-director-params
+        - do:
+          - <<: *deploy-director
+          - <<: *update-cloud-config
+          - <<: *test-stemcell
+          ensure:
+            do:
+              - <<: *teardown
+        ensure:
+          do:
+            - <<: *destroy-environment
+
+  - name: bats-ubuntu
+    serial: true
+    plan:
+      - aggregate:
+        - {get: bosh-release,    trigger: true}
+        - {get: cpi-release,     trigger: true}
+        - {get: stemcell,        trigger: true, resource: ubuntu-stemcell}
+        - {get: after-midnight,  trigger: true}
+        - {get: pipelines,       trigger: false}
+        - {get: bosh-cli,        trigger: false}
+        - {get: bats,            trigger: false}
+        - {get: bosh-deployment, trigger: false}
+      - <<: *environment-vars
+      - <<: *create-environment
+      - <<: *prepare-director
+      - do:
+          - <<: *deploy-director
+          - <<: *run-bats
+            params:
+              <<: *run-bats-params
+              STEMCELL_NAME:   bosh-oracle-kvm-ubuntu-trusty-go_agent
+              BAT_RSPEC_FLAGS: "--tag ~vip_networking --tag ~dynamic_networking --tag ~root_partition --tag ~raw_ephemeral_storage --tag ~changing_static_ip --tag ~network_reconfiguration --tag ~dns --tag ~multiple_manual_networks --tag ~persistent_disk"
+        ensure:
+          do:
+            - <<: *teardown
+            - <<: *destroy-environment
+
+  - name: certify-ubuntu
+    serial: true
+    plan:
+      - aggregate:
+        - {get: bosh-release, trigger: true, passed: [bats-ubuntu]}
+        - {get: cpi-release,  trigger: true, passed: [bats-ubuntu]}
+        - {get: stemcell,     trigger: true, passed: [bats-ubuntu, test-upgrade, test-stemcell], resource: ubuntu-stemcell}
+        - {get: pipelines,    trigger: false}
+      - task: generate
+        file: pipelines/shared/tasks/generate-receipt.yml
+        params:
+          CPI_RELEASE_NAME: bosh-oracle-cpi
+          STEMCELL_NAME:    bosh-oracle-kvm-ubuntu-trusty-go_agent
+      - {put: receipt, params: {file: certification/*-receipt.json}}
+
+
+resource_types:
+- name: terraform_type
+  type: docker-image
+  source:
+    repository: dmutreja/oci-terraform-resource
+
+resources:
+  - name: after-midnight
+    type: time
+    source:
+      start: 12:00 AM -0700
+      stop: 2:00 AM -0700
+  - name: pipelines
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry-incubator/bosh-cpi-certification
+      branch: master
+  - name: bosh-deployment
+    type: git
+    source:
+      uri: https://github.com/dmutreja/bosh-deployment
+      branch: oracle
+  - name: bosh-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/bosh
+  - name: bosh-cli
+    type: s3
+    source:
+      regexp: bosh-cli-([0-9.]+)-linux-amd64
+      bucket: bosh-cli-artifacts
+      region_name: us-east-1
+  - name: bats
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
+      branch: gocli-bats
+  - name: receipt
+    type: s3
+    source:
+      access_key_id:     {{certification__bucket_access_key}}
+      secret_access_key: {{certification__bucket_secret_key}}
+      bucket:            {{certification__bucket}}
+      regexp:            .*-(\d+)-receipt\.json
+      region_name:       {{certification__bucket_region}}
+      endpoint:          {{certification__endpoint}}
+  - name: cpi-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry-incubator/bosh-oracle-cpi-release
+  - name: ubuntu-stemcell
+    type: bosh-io-stemcell
+    source:
+      name: bosh-oracle-kvm-ubuntu-trusty-go_agent
+  - name: environment
+    type: terraform_type
+    source:
+      delete_on_failure: true
+      storage:
+        bucket: ((terraform-bucket))
+        bucket_path: ((terraform-bucket-path))
+        access_key_id: ((oracle-s3-access-key-id))
+        secret_access_key: ((oracle-s3-secret-access-key))
+        region_name: ((oracle-region))
+        endpoint: https://((oracle-namespace)).compat.objectstorage.((oracle-region)).oraclecloud.com
+        use_signing_v4: true
+       vars:
+         oracle_tenancy_ocid: ((oracle-tenancy))
+         oracle_user_ocid: ((oracle-user))
+         oracle_region: ((oracle-region))
+         oracle_fingerprint: ((oracle-fingerprint))
+         oracle_compartment_name: ((oracle-compartment-name))
+  - name: bosh-linux-stemcell-builder
+    type: git
+    source:
+      uri: https://github.com/cloudfoundry/bosh-linux-stemcell-builder
+      branch: master
+  - name: syslog-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/syslog-release
+  - name: os-conf-release
+    type: bosh-io-release
+    source:
+      repository: cloudfoundry/os-conf-release
