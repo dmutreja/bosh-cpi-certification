@@ -10,7 +10,7 @@ inputs:
 outputs:
   - name: terraform-vars
 run:
-  path: pipleines/oracle/tasks/prepare-terraform-vars.sh
+  path: pipelines/oracle/tasks/prepare-terraform-vars.sh
 
 params:
   oracle_apikey:

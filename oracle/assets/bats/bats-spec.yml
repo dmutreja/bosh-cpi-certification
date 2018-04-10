@@ -2,7 +2,7 @@
 cpi: oci
 properties:
   stemcell:
-    name: light-oracle-ubuntu-trusty
+    name: ((stemcell_name))
     version: latest
   instances: 1
   instance_shape: 'VM.Standard1.2'
