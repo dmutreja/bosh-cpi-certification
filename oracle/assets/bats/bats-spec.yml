@@ -15,8 +15,10 @@ properties:
       vcn: ((vcn))
       subnet: ((bats_subnet1_name))
     cidr: ((bats_subnet1_cidr))
-    reserved: ((bats_subnet1_reserved))
-    static: ((bats_subnet1_static))
+    reserved:
+       [((bats_subnet1_reserved))]
+    static:
+      [((bats_subnet1_static))]
     gateway: ((bats_subnet1_gw))
   - name: second
     type: manual
@@ -25,6 +27,8 @@ properties:
       vcn:  ((vcn))
       subnet: ((bats_subnet2_name))
     cidr: ((bats_subnet2_cidr))
-    reserved: ((bats_subnet2_reserved))
-    static: ((bats_subnet2_static))
+    reserved:
+      [((bats_subnet2_reserved))]
+    static:
+      [((bats_subnet2_static))]
     gateway: ((bats_subnet2_gw))
