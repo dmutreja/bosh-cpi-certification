@@ -57,11 +57,9 @@ output bats_subnet2_static {
 output bats_subnet2_static_ip {
    value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 30)}"
 }
-/*
-Fix me when oci provider supports Public IPs
-*/
 output external_ip {
-  value = "129.146.18.147"
+  sensitive = true
+  value = "${oci_core_public_ip.director_vip.ip_address}"
 }
 output tenancy {
   sensitive = true
