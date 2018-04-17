@@ -42,6 +42,13 @@ shared:
       INFRASTRUCTURE: oracle
       DIRECTOR_VARS_FILE: ((oracle-director-vars-file))
 
+  - &update-cpi-config
+    task: update-cpi-config
+    file: pipelines/shared/tasks/update-cpi-config.yml
+    params: &update-cpi-config-params
+      INFRASTRUCTURE: oracle
+      DIRECTOR_VARS_FILE: ((oracle-director-vars-file))
+
   - &teardown
     task: teardown
     file: pipelines/shared/tasks/teardown.yml
@@ -95,6 +102,7 @@ jobs:
             <<: *prepare-director-params
         - do:
           - <<: *deploy-director
+          - <<: *update-cpi-config
           - <<: *update-cloud-config
           - <<: *test-stemcell
           ensure:
