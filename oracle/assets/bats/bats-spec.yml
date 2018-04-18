@@ -12,8 +12,8 @@ properties:
     type: manual
     static_ip: ((bats_subnet1_static_ip))
     cloud_properties:
-      vcn: ((vcn))
-      subnet: ((bats_subnet1_name))
+      vcn_id: ((vcn_id))
+      subnet_id: ((bats_subnet1_id))
     cidr: ((bats_subnet1_cidr))
     reserved:
        [((bats_subnet1_reserved))]
@@ -24,8 +24,8 @@ properties:
     type: manual
     static_ip: ((bats_subnet2_static_ip))
     cloud_properties:
-      vcn:  ((vcn))
-      subnet: ((bats_subnet2_name))
+      vcn_id:  ((vcn_id))
+      subnet_id: ((bats_subnet2_id))
     cidr: ((bats_subnet2_cidr))
     reserved:
       [((bats_subnet2_reserved))]

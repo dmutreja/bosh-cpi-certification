@@ -87,6 +87,7 @@ jobs:
         - {get: cpi-release,     trigger: true}
         - {get: stemcell,        trigger: true, resource: ubuntu-stemcell}
 #        - {get: after-midnight,  trigger: true}
+        - {get: every-four-hours,  trigger: true}
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
         - {get: bats,            trigger: false}
@@ -120,6 +121,7 @@ jobs:
         - {get: cpi-release,     trigger: true}
         - {get: stemcell,        trigger: true, resource: ubuntu-stemcell}
 #        - {get: after-midnight,  trigger: true}
+        - {get: every-four-hours,  trigger: true}
         - {get: pipelines,       trigger: false}
         - {get: bosh-cli,        trigger: false}
         - {get: bats,            trigger: false}
@@ -160,6 +162,11 @@ resources:
 #    source:
 #      start: 12:00 AM -0700
 #      stop: 2:00 AM -0700
+  - name: every-four-hours
+    type: time
+    source:
+      interval: 4h
+
   - name: pipelines
     type: git
     source:
@@ -183,8 +190,8 @@ resources:
   - name: bats
     type: git
     source:
-      uri: https://github.com/cloudfoundry/bosh-acceptance-tests.git
-      branch: gocli-bats
+      uri: https://github.com/dmutreja/bosh-acceptance-tests.git
+      branch: oracle-certification
 
   - name: cpi-release
     type: ocis3

@@ -1,14 +1,17 @@
 output vcn {
   value = "${oci_core_virtual_network.ci_vcn.display_name}"
 }
-output subnet_id {
-  value = "${oci_core_subnet.director_subnet.id}"
+output vcn_id {
+  value = "${oci_core_virtual_network.ci_vcn.id}"
 }
 output compartment_id {
-   value = "${oci_core_subnet.director_subnet.compartment_id}"
+  value = "${oci_core_subnet.director_subnet.compartment_id}"
 }
 output subnet {
   value = "${oci_core_subnet.director_subnet.display_name}"
+}
+output subnet_id {
+  value = "${oci_core_subnet.director_subnet.id}"
 }
 output internal_cidr {
   value = "${oci_core_subnet.director_subnet.cidr_block}"
@@ -17,45 +20,49 @@ output internal_gw {
   value = "${cidrhost(oci_core_subnet.director_subnet.cidr_block, 1)}"
 }
 output internal_ip {
-   value = "${cidrhost(oci_core_subnet.director_subnet.cidr_block, 2)}"
+  value = "${cidrhost(oci_core_subnet.director_subnet.cidr_block, 2)}"
 }
-
 output bats_subnet1_name {
-   value = "${oci_core_subnet.bats_subnet1.display_name}"
+  value = "${oci_core_subnet.bats_subnet1.display_name}"
+}
+output bats_subnet1_id {
+  value = "${oci_core_subnet.bats_subnet1.id}"
 }
 output bats_subnet1_cidr {
-   value = "${oci_core_subnet.bats_subnet1.cidr_block}"
+  value = "${oci_core_subnet.bats_subnet1.cidr_block}"
 }
-
 output bats_subnet1_gw {
-   value ="${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 1)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 1)}"
 }
 output bats_subnet1_reserved {
-   value = "${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 2)} - ${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 9)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 2)} - ${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 9)}"
 }
 output bats_subnet1_static {
-   value = "${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 10)} - ${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 30)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 10)} - ${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 30)}"
 }
 output bats_subnet1_static_ip {
-   value = "${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 30)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet1.cidr_block, 30)}"
 }
 output bats_subnet2_name {
-   value = "${oci_core_subnet.bats_subnet2.display_name}"
+  value = "${oci_core_subnet.bats_subnet2.display_name}"
+}
+output bats_subnet2_id {
+  value = "${oci_core_subnet.bats_subnet2.id}"
 }
 output bats_subnet2_cidr {
-   value = "${oci_core_subnet.bats_subnet2.cidr_block}"
+  value = "${oci_core_subnet.bats_subnet2.cidr_block}"
 }
 output bats_subnet2_gw {
-   value ="${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 1)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 1)}"
 }
 output bats_subnet2_reserved {
-   value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 2)} - ${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 9)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 2)} - ${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 9)}"
 }
 output bats_subnet2_static {
-   value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 10)} - ${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 30)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 10)} - ${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 30)}"
 }
 output bats_subnet2_static_ip {
-   value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 30)}"
+  value = "${cidrhost(oci_core_subnet.bats_subnet2.cidr_block, 30)}"
 }
 output external_ip {
   sensitive = true

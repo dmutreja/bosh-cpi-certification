@@ -13,8 +13,8 @@
 - type: replace
   path: /networks/name=public/cloud_properties?
   value:
-    vcn: ((vcn))
-    subnet_name: ((subnet))
+    vcn_id: ((vcn_id))
+    subnet_id: ((subnet_id))
 
 - type: remove
   path: /instance_groups/name=bosh/networks/0
